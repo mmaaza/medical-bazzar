@@ -1,118 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ProductCard from '../components/ui/ProductCard';
+import Hero from '../components/layout/Hero';
 
 const HomePage = () => {
   // Medical supplies product data
   const featuredProducts = [
-    { id: 1, name: 'Digital Thermometer', price: 29.99, image: 'https://via.placeholder.com/300x300?text=Thermometer', rating: 4.5, reviews: 128, discount: 20 },
-    { id: 2, name: 'Blood Pressure Monitor', price: 89.99, image: 'https://via.placeholder.com/300x300?text=BP+Monitor', rating: 4.8, reviews: 356, discount: 0 },
-    { id: 3, name: 'Pulse Oximeter', price: 49.99, image: 'https://via.placeholder.com/300x300?text=Oximeter', rating: 4.7, reviews: 245, discount: 15 },
-    { id: 4, name: 'Glucose Monitor Kit', price: 79.99, image: 'https://via.placeholder.com/300x300?text=Glucose+Monitor', rating: 4.3, reviews: 187, discount: 10 },
+    { id: 1, name: 'Digital Thermometer', price: 29.99, image: 'https://placehold.co/300x300?text=Thermometer', rating: 4.5, reviews: 128, discount: 20 },
+    { id: 2, name: 'Blood Pressure Monitor', price: 89.99, image: 'https://placehold.co/300x300?text=BP+Monitor', rating: 4.8, reviews: 356, discount: 0 },
+    { id: 3, name: 'Pulse Oximeter', price: 49.99, image: 'https://placehold.co/300x300?text=Oximeter', rating: 4.7, reviews: 245, discount: 15 },
+    { id: 4, name: 'Glucose Monitor Kit', price: 79.99, image: 'https://placehold.co/300x300?text=Glucose+Monitor', rating: 4.3, reviews: 187, discount: 10 },
   ];
 
   const newArrivals = [
-    { id: 5, name: 'N95 Respirator Masks (10pk)', price: 24.99, image: 'https://via.placeholder.com/300x300?text=N95+Masks', rating: 4.1, reviews: 64, discount: 0 },
-    { id: 6, name: 'Infrared Forehead Thermometer', price: 59.99, image: 'https://via.placeholder.com/300x300?text=IR+Thermometer', rating: 4.6, reviews: 132, discount: 0 },
-    { id: 7, name: 'Medical Stethoscope', price: 39.99, image: 'https://via.placeholder.com/300x300?text=Stethoscope', rating: 4.4, reviews: 98, discount: 0 },
-    { id: 8, name: 'First Aid Kit (Comprehensive)', price: 45.99, image: 'https://via.placeholder.com/300x300?text=First+Aid+Kit', rating: 4.2, reviews: 112, discount: 0 },
+    { id: 5, name: 'N95 Respirator Masks (10pk)', price: 24.99, image: 'https://placehold.co/300x300?text=N95+Masks', rating: 4.1, reviews: 64, discount: 0 },
+    { id: 6, name: 'Infrared Forehead Thermometer', price: 59.99, image: 'https://placehold.co/300x300?text=IR+Thermometer', rating: 4.6, reviews: 132, discount: 0 },
+    { id: 7, name: 'Medical Stethoscope', price: 39.99, image: 'https://placehold.co/300x300?text=Stethoscope', rating: 4.4, reviews: 98, discount: 0 },
+    { id: 8, name: 'First Aid Kit (Comprehensive)', price: 45.99, image: 'https://placehold.co/300x300?text=First+Aid+Kit', rating: 4.2, reviews: 112, discount: 0 },
   ];
 
   // Medical categories
   const trendingCategories = [
-    { id: 1, name: 'Diagnostic Devices', image: 'https://via.placeholder.com/400x300?text=Diagnostic+Devices', count: 42 },
-    { id: 2, name: 'Personal Protection', image: 'https://via.placeholder.com/400x300?text=PPE', count: 38 },
-    { id: 3, name: 'Home Care', image: 'https://via.placeholder.com/400x300?text=Home+Care', count: 56 },
+    { id: 1, name: 'Diagnostic Devices', image: 'https://placehold.co/400x300?text=Diagnostic+Devices', count: 42 },
+    { id: 2, name: 'Personal Protection', image: 'https://placehold.co/400x300?text=PPE', count: 38 },
+    { id: 3, name: 'Home Care', image: 'https://placehold.co/400x300?text=Home+Care', count: 56 },
   ];
 
   // Medical flash deals
   const flashDeals = [
-    { id: 9, name: 'Digital Blood Pressure Monitor', price: 129.99, salePrice: 79.99, image: 'https://via.placeholder.com/300x300?text=BP+Monitor', timeLeft: '2d 5h' },
-    { id: 10, name: 'Nebulizer Machine', price: 89.99, salePrice: 49.99, image: 'https://via.placeholder.com/300x300?text=Nebulizer', timeLeft: '1d 12h' },
-    { id: 11, name: 'Diabetic Testing Kit', price: 199.99, salePrice: 149.99, image: 'https://via.placeholder.com/300x300?text=Testing+Kit', timeLeft: '8h 45m' },
+    { id: 9, name: 'Digital Blood Pressure Monitor', price: 129.99, salePrice: 79.99, image: 'https://placehold.co/300x300?text=BP+Monitor', timeLeft: '2d 5h' },
+    { id: 10, name: 'Nebulizer Machine', price: 89.99, salePrice: 49.99, image: 'https://placehold.co/300x300?text=Nebulizer', timeLeft: '1d 12h' },
+    { id: 11, name: 'Diabetic Testing Kit', price: 199.99, salePrice: 149.99, image: 'https://placehold.co/300x300?text=Testing+Kit', timeLeft: '8h 45m' },
   ];
-
-  // Display stars based on rating
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <svg key={`full-${i}`} className="w-4 h-4 text-accent-500 fill-current" viewBox="0 0 24 24">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-        </svg>
-      );
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <svg key="half" className="w-4 h-4 text-accent-500 fill-current" viewBox="0 0 24 24">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path>
-        </svg>
-      );
-    }
-
-    const emptyStars = 5 - stars.length;
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <svg key={`empty-${i}`} className="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 24 24">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-        </svg>
-      );
-    }
-
-    return stars;
-  };
-
-  // Product card component
-  const ProductCard = ({ product }) => (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-      <div className="relative">
-        <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
-        {product.discount > 0 && (
-          <div className="absolute top-2 right-2 bg-secondary-500 text-white text-xs font-bold px-2 py-1 rounded">
-            {product.discount}% OFF
-          </div>
-        )}
-        <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full hover:bg-opacity-70 transition-all">
-          <button className="focus:outline-none">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-1">{product.name}</h3>
-        <div className="flex items-center mb-2">
-          <div className="flex mr-2">
-            {renderStars(product.rating)}
-          </div>
-          <span className="text-sm text-gray-500">({product.reviews})</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            {product.discount > 0 ? (
-              <div className="flex items-center">
-                <span className="text-lg font-bold text-gray-900">
-                  ${(product.price * (1 - product.discount / 100)).toFixed(2)}
-                </span>
-                <span className="text-sm text-gray-500 line-through ml-2">
-                  ${product.price.toFixed(2)}
-                </span>
-              </div>
-            ) : (
-              <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
-            )}
-          </div>
-          <button className="bg-primary-500 hover:bg-primary-600 text-white py-1 px-3 rounded-md text-sm transition duration-300">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   // Flash Deal Card Component
   const FlashDealCard = ({ deal }) => (
@@ -143,71 +62,43 @@ const HomePage = () => {
 
   return (
     <div className="bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-700 to-primary-500 text-white">
-        <div className="container mx-auto px-4 py-20">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-10 md:mb-0">
-              <h1 className="text-4xl lg:text-5xl font-bold mb-4">Quality Medical Supplies</h1>
-              <p className="text-xl mb-6">Save up to 40% on essential healthcare products for home and professional use.</p>
-              <div className="flex space-x-4">
-                <Link to="/sale" className="bg-white text-primary-500 hover:bg-gray-100 font-medium py-3 px-6 rounded-md transition duration-300">
-                  Shop Now
-                </Link>
-                <Link to="/collections" className="bg-transparent hover:bg-primary-600 border border-white font-medium py-3 px-6 rounded-md transition duration-300">
-                  View Categories
-                </Link>
-              </div>
-            </div>
-            <div className="md:w-1/2">
-              <img src="https://via.placeholder.com/600x400?text=Medical+Supplies" alt="Medical Supplies" className="rounded-lg shadow-xl" />
-            </div>
-          </div>
-        </div>
-
-        {/* Wave Shape Divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" className="w-full h-16 text-gray-50 fill-current">
-            <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
-          </svg>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-12">
+      <Hero />
+      
+      {/* Features Section */}
+      <section className="py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center bg-white p-6 rounded-lg shadow-md">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
               <div className="mr-4 bg-primary-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1">Fast Delivery</h3>
-                <p className="text-gray-600 text-sm">On all orders over $50</p>
+                <h3 className="font-bold text-base md:text-lg mb-1">Fast Delivery</h3>
+                <p className="text-sm text-gray-600">On all orders over $50</p>
               </div>
             </div>
-            <div className="flex items-center bg-white p-6 rounded-lg shadow-md">
+            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
               <div className="mr-4 bg-primary-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1">24/7 Support</h3>
-                <p className="text-gray-600 text-sm">Healthcare professionals available</p>
+                <h3 className="font-bold text-base md:text-lg mb-1">24/7 Support</h3>
+                <p className="text-sm text-gray-600">Healthcare professionals available</p>
               </div>
             </div>
-            <div className="flex items-center bg-white p-6 rounded-lg shadow-md">
+            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
               <div className="mr-4 bg-primary-100 p-3 rounded-full">
                 <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1">Quality Guarantee</h3>
-                <p className="text-gray-600 text-sm">FDA approved products</p>
+                <h3 className="font-bold text-base md:text-lg mb-1">Quality Guarantee</h3>
+                <p className="text-sm text-gray-600">FDA approved products</p>
               </div>
             </div>
           </div>
