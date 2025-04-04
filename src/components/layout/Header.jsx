@@ -12,7 +12,6 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
-    // Implement search functionality here
   };
 
   return (
@@ -22,7 +21,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold font-heading">Medisanj</span>
+            <span className="text-2xl font-bold font-heading">MB Nepal</span>
           </Link>
 
           {/* Search Bar - Hidden on mobile */}
