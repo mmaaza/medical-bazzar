@@ -31,7 +31,7 @@ const Header = () => {
                 <input
                   type="text"
                   className="w-full py-2 px-4 pr-10 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent-400"
-                  placeholder="Search products..."
+                  placeholder="Search medical supplies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -100,7 +100,7 @@ const Header = () => {
               <input
                 type="text"
                 className="w-full py-2 px-4 pr-10 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent-400"
-                placeholder="Search products..."
+                placeholder="Search medical supplies..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -128,21 +128,27 @@ const Header = () => {
                 </svg>
                 All Categories
               </button>
-              <div className="absolute z-10 hidden group-hover:block bg-white shadow-lg text-gray-800 w-56">
+              <div className="absolute z-10 hidden group-hover:block bg-white shadow-lg text-gray-800 w-64">
                 <div className="py-2">
-                  <Link to="/category/electronics" className="block px-4 py-2 hover:bg-primary-100">Electronics</Link>
-                  <Link to="/category/clothing" className="block px-4 py-2 hover:bg-primary-100">Clothing</Link>
-                  <Link to="/category/home" className="block px-4 py-2 hover:bg-primary-100">Home & Kitchen</Link>
-                  <Link to="/category/beauty" className="block px-4 py-2 hover:bg-primary-100">Beauty & Personal Care</Link>
-                  <Link to="/category/books" className="block px-4 py-2 hover:bg-primary-100">Books</Link>
+                  <Link to="/category/hospital-equipment" className="block px-4 py-2 hover:bg-primary-100">Hospital Equipment</Link>
+                  <Link to="/category/laboratory" className="block px-4 py-2 hover:bg-primary-100">Laboratory Supplies</Link>
+                  <Link to="/category/surgery" className="block px-4 py-2 hover:bg-primary-100">Surgery & ICU</Link>
+                  <Link to="/category/dental" className="block px-4 py-2 hover:bg-primary-100">Dental Equipment</Link>
+                  <Link to="/category/diagnostic" className="block px-4 py-2 hover:bg-primary-100">Diagnostic Equipment</Link>
+                  <Link to="/category/orthopedic" className="block px-4 py-2 hover:bg-primary-100">Orthopedic & Mobility</Link>
+                  <Link to="/category/disposables" className="block px-4 py-2 hover:bg-primary-100">Medical Disposables</Link>
+                  <Link to="/category/ppe" className="block px-4 py-2 hover:bg-primary-100">PPE & Safety</Link>
+                  <Link to="/category/pharmacy" className="block px-4 py-2 hover:bg-primary-100">Pharmacy Supplies</Link>
+                  <Link to="/category/emergency" className="block px-4 py-2 hover:bg-primary-100">Emergency & First Aid</Link>
                 </div>
               </div>
             </div>
             <div className="hidden md:flex">
-              <Link to="/deals" className="px-4 py-2 text-white hover:bg-primary-700">Today's Deals</Link>
-              <Link to="/bestsellers" className="px-4 py-2 text-white hover:bg-primary-700">Best Sellers</Link>
-              <Link to="/new" className="px-4 py-2 text-white hover:bg-primary-700">New Arrivals</Link>
-              <Link to="/customer-service" className="px-4 py-2 text-white hover:bg-primary-700">Customer Service</Link>
+              <Link to="/new-arrivals" className="px-4 py-2 text-white hover:bg-primary-700">New Arrivals</Link>
+              <Link to="/best-sellers" className="px-4 py-2 text-white hover:bg-primary-700">Best Sellers</Link>
+              <Link to="/deals" className="px-4 py-2 text-white hover:bg-primary-700">Deals & Offers</Link>
+              <Link to="/brands" className="px-4 py-2 text-white hover:bg-primary-700">Top Brands</Link>
+              <Link to="/hospital-solutions" className="px-4 py-2 text-white hover:bg-primary-700">Hospital Solutions</Link>
             </div>
           </nav>
         </div>
@@ -152,10 +158,11 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-primary-700 text-white">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link to="/deals" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Today's Deals</Link>
-            <Link to="/bestsellers" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Best Sellers</Link>
-            <Link to="/new" className="block px-3 py-2 hover:bg-primary-800 rounded-md">New Arrivals</Link>
-            <Link to="/customer-service" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Customer Service</Link>
+            <Link to="/new-arrivals" className="block px-3 py-2 hover:bg-primary-800 rounded-md">New Arrivals</Link>
+            <Link to="/best-sellers" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Best Sellers</Link>
+            <Link to="/deals" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Deals & Offers</Link>
+            <Link to="/brands" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Top Brands</Link>
+            <Link to="/hospital-solutions" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Hospital Solutions</Link>
             <hr className="border-primary-600" />
             <Link to="/account" className="block px-3 py-2 hover:bg-primary-800 rounded-md">My Account</Link>
             <Link to="/wishlist" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Wishlist</Link>

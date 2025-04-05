@@ -1,64 +1,73 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail
-} from 'firebase/auth';
-import { auth } from '../firebase';
+import { login as apiLogin, register as apiRegister, getCurrentUser, logout as apiLogout } from '../services/api';
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+    return useContext(AuthContext);
 };
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  // Sign up function
-  const signup = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
+    // Check if user is logged in on mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            getCurrentUser()
+                .then(response => {
+                    setCurrentUser(response.data);
+                })
+                .catch(() => {
+                    localStorage.removeItem('token');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else {
+            setLoading(false);
+        }
+    }, []);
 
-  // Login function
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+    // Register function
+    const signup = async (name, email, password) => {
+        try {
+            const response = await apiRegister({ name, email, password });
+            setCurrentUser(response.data);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    };
 
-  // Logout function
-  const logout = () => {
-    return signOut(auth);
-  };
+    // Login function
+    const login = async (email, password) => {
+        try {
+            const response = await apiLogin(email, password);
+            setCurrentUser(response.data);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    };
 
-  // Reset password function
-  const resetPassword = (email) => {
-    return sendPasswordResetEmail(auth, email);
-  };
+    // Logout function
+    const logout = () => {
+        apiLogout();
+        setCurrentUser(null);
+    };
 
-  // Effect to handle auth state changes
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-    
-    return unsubscribe;
-  }, []);
+    const value = {
+        currentUser,
+        signup,
+        login,
+        logout,
+    };
 
-  const value = {
-    currentUser,
-    signup,
-    login,
-    logout,
-    resetPassword,
-  };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={value}>
+            {!loading && children}
+        </AuthContext.Provider>
+    );
 };
