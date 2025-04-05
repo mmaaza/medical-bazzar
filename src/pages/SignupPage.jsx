@@ -9,9 +9,9 @@ const SignupPage = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerificationNotice, setShowVerificationNotice] = useState(false);
   
   const { signup } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,13 +24,69 @@ const SignupPage = () => {
       setError('');
       setLoading(true);
       await signup(name, email, password);
-      navigate('/');
+      setShowVerificationNotice(true);
     } catch (error) {
-      setError('Failed to create an account: ' + error.message);
+      setError('Failed to create an account: ' + (error.message || error.error));
+      setShowVerificationNotice(false);
     } finally {
       setLoading(false);
     }
   };
+
+  if (showVerificationNotice) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-mobile-h1 md:text-3xl lg:text-4xl font-bold font-heading text-gray-900">
+              Check Your Email
+            </h1>
+            <p className="mt-3 text-gray-600 text-sm md:text-base">
+              We've sent a verification link to your email address
+            </p>
+          </div>
+
+          <div className="bg-white py-8 px-4 shadow-mobile rounded-lg sm:px-10">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 mb-4">
+                <svg className="h-6 w-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Verification Email Sent</h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Please check your email ({email}) and click the verification link to complete your registration.
+                The link will expire in 24 hours.
+              </p>
+              <div className="space-y-4">
+                <Link
+                  to="/login"
+                  className="block w-full text-center bg-primary-500 hover:bg-primary-600 text-white py-3 px-4 rounded-md text-sm font-medium transition duration-300"
+                >
+                  Go to Login
+                </Link>
+                <button
+                  onClick={() => window.location.href = `mailto:${email}`}
+                  className="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-md text-sm font-medium transition duration-300"
+                >
+                  Open Email App
+                </button>
+              </div>
+              <p className="mt-6 text-xs text-gray-500">
+                If you don't see the email, check your spam folder or{' '}
+                <button 
+                  onClick={() => setShowVerificationNotice(false)}
+                  className="text-primary-500 hover:text-primary-600"
+                >
+                  try signing up again
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -90,6 +146,7 @@ const SignupPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-gray-900"
                 placeholder="••••••••"
+                minLength={6}
               />
             </div>
             
@@ -105,6 +162,7 @@ const SignupPage = () => {
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-gray-900"
                 placeholder="••••••••"
+                minLength={6}
               />
             </div>
 

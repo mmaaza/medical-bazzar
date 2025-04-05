@@ -34,10 +34,13 @@ export const AuthProvider = ({ children }) => {
     const signup = async (name, email, password) => {
         try {
             const response = await apiRegister({ name, email, password });
-            setCurrentUser(response.data);
+            if (response.data && response.data.user) {
+                setCurrentUser(response.data.user);
+                localStorage.setItem('pendingVerificationEmail', email);
+            }
             return response;
         } catch (error) {
-            throw error;
+            throw error.response?.data || error;
         }
     };
 
@@ -45,10 +48,10 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await apiLogin(email, password);
-            setCurrentUser(response.data);
+            setCurrentUser(response.user);
             return response;
         } catch (error) {
-            throw error;
+            throw error.response?.data || error;
         }
     };
 
@@ -56,6 +59,9 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         apiLogout();
         setCurrentUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('pendingVerificationEmail');
+        sessionStorage.removeItem('tempLoginPassword');
     };
 
     const value = {

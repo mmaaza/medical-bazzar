@@ -1,11 +1,20 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-// This component wraps protected routes
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, requireVerification = false }) => {
   const { currentUser } = useAuth();
   
-  return currentUser ? children : <Navigate to="/login" />;
+  if (!currentUser) {
+    return <Navigate to="/login" />;
+  }
+
+  if (requireVerification && !currentUser.isEmailVerified) {
+    // Store email for resending verification if needed
+    localStorage.setItem('pendingVerificationEmail', currentUser.email);
+    return <Navigate to="/verify-email" />;
+  }
+  
+  return children;
 };
 
 export default PrivateRoute;

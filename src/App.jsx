@@ -4,7 +4,11 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from './contexts/AuthContext';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 // For demo purposes - these would be actual page components in a full implementation
 const CategoryPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Category Page</h1></div>;
@@ -21,15 +25,51 @@ function App() {
       <Router>
         <Routes>
           <Route element={<Layout />}>
+            {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/verify-email" element={<EmailVerificationPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/category/:categoryName" element={<CategoryPage />} />
             <Route path="/product/:productId" element={<ProductPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
+            
+            {/* Protected Routes */}
+            <Route 
+              path="/cart" 
+              element={
+                <PrivateRoute requireVerification={true}>
+                  <CartPage />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/checkout" 
+              element={
+                <PrivateRoute requireVerification={true}>
+                  <CheckoutPage />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/account" 
+              element={
+                <PrivateRoute requireVerification={true}>
+                  <AccountPage />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/wishlist" 
+              element={
+                <PrivateRoute requireVerification={true}>
+                  <WishlistPage />
+                </PrivateRoute>
+              } 
+            />
+            
+            {/* 404 Route */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

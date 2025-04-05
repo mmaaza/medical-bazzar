@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,8 +17,25 @@ const Header = () => {
     console.log("Searching for:", searchQuery);
   };
 
+  const handleAccountClick = () => {
+    if (!currentUser) {
+      navigate('/login');
+    } else {
+      navigate('/account');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+
   return (
-    <header className="bg-primary-500 text-white shadow-md">
+    <header className="bg-primary-500 text-white shadow-md sticky top-0 z-50">
       {/* Top Navigation Bar */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
@@ -49,14 +69,24 @@ const Header = () => {
 
           {/* Navigation Items */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/account" className="hover:text-accent-300 transition-colors duration-200">
+            <button onClick={handleAccountClick} className="hover:text-accent-300 transition-colors duration-200">
               <div className="flex flex-col items-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
-                <span className="text-xs mt-1">Account</span>
+                <span className="text-xs mt-1">{currentUser ? 'Account' : 'Login'}</span>
               </div>
-            </Link>
+            </button>
+            {currentUser && (
+              <button onClick={handleLogout} className="hover:text-accent-300 transition-colors duration-200">
+                <div className="flex flex-col items-center">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                  <span className="text-xs mt-1">Logout</span>
+                </div>
+              </button>
+            )}
             <Link to="/wishlist" className="hover:text-accent-300 transition-colors duration-200">
               <div className="flex flex-col items-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -164,7 +194,14 @@ const Header = () => {
             <Link to="/brands" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Top Brands</Link>
             <Link to="/hospital-solutions" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Hospital Solutions</Link>
             <hr className="border-primary-600" />
-            <Link to="/account" className="block px-3 py-2 hover:bg-primary-800 rounded-md">My Account</Link>
+            <button onClick={handleAccountClick} className="block w-full text-left px-3 py-2 hover:bg-primary-800 rounded-md">
+              {currentUser ? 'My Account' : 'Login'}
+            </button>
+            {currentUser && (
+              <button onClick={handleLogout} className="block w-full text-left px-3 py-2 hover:bg-primary-800 rounded-md">
+                Logout
+              </button>
+            )}
             <Link to="/wishlist" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Wishlist</Link>
             <Link to="/cart" className="block px-3 py-2 hover:bg-primary-800 rounded-md">Cart (3)</Link>
           </div>
