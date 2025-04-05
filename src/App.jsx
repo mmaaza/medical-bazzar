@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
+import DashboardLayout from './components/layout/DashboardLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -15,9 +16,14 @@ const CategoryPage = () => <div className="container mx-auto px-4 py-10"><h1 cla
 const ProductPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Product Page</h1></div>;
 const CartPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Cart Page</h1></div>;
 const CheckoutPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Checkout Page</h1></div>;
-const AccountPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Account Page</h1></div>;
-const WishlistPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Wishlist Page</h1></div>;
 const NotFoundPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">404 - Page Not Found</h1></div>;
+
+// Dashboard Pages
+const DashboardPage = () => <div><h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1></div>;
+const DashboardOrdersPage = () => <div><h1 className="text-2xl font-bold mb-6">My Orders</h1></div>;
+const DashboardWishlistPage = () => <div><h1 className="text-2xl font-bold mb-6">My Wishlist</h1></div>;
+const DashboardProfilePage = () => <div><h1 className="text-2xl font-bold mb-6">My Profile</h1></div>;
+const DashboardSettingsPage = () => <div><h1 className="text-2xl font-bold mb-6">Account Settings</h1></div>;
 
 function App() {
   return (
@@ -52,22 +58,22 @@ function App() {
                 </PrivateRoute>
               } 
             />
-            <Route 
-              path="/account" 
+
+            {/* Dashboard Routes */}
+            <Route
+              path="/account"
               element={
                 <PrivateRoute requireVerification={true}>
-                  <AccountPage />
+                  <DashboardLayout />
                 </PrivateRoute>
-              } 
-            />
-            <Route 
-              path="/wishlist" 
-              element={
-                <PrivateRoute requireVerification={true}>
-                  <WishlistPage />
-                </PrivateRoute>
-              } 
-            />
+              }
+            >
+              <Route index element={<DashboardPage />} />
+              <Route path="orders" element={<DashboardOrdersPage />} />
+              <Route path="wishlist" element={<DashboardWishlistPage />} />
+              <Route path="profile" element={<DashboardProfilePage />} />
+              <Route path="settings" element={<DashboardSettingsPage />} />
+            </Route>
             
             {/* 404 Route */}
             <Route path="*" element={<NotFoundPage />} />

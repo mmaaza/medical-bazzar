@@ -1,16 +1,19 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 
 const Layout = () => {
+  const location = useLocation();
+  const isAccountRoute = location.pathname.startsWith('/account');
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow flex flex-col">
         <Outlet />
       </main>
-      <Footer />
+      {!isAccountRoute && <Footer />}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
@@ -7,6 +7,9 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAccountRoute = location.pathname.startsWith('/account');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -35,7 +38,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-primary-500 text-white shadow-md sticky top-0 z-50">
+    <header className={`bg-primary-500 text-white shadow-md ${!isAccountRoute ? 'sticky top-0' : 'h-16'} z-50`}>
       {/* Top Navigation Bar */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
@@ -147,42 +150,44 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Categories Menu */}
-      <div className="bg-primary-600">
-        <div className="container mx-auto px-4">
-          <nav className="flex items-center">
-            <div className="relative group">
-              <button className="flex items-center px-4 py-2 text-white hover:bg-primary-700 focus:outline-none">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-                All Categories
-              </button>
-              <div className="absolute z-10 hidden group-hover:block bg-white shadow-lg text-gray-800 w-64">
-                <div className="py-2">
-                  <Link to="/category/hospital-equipment" className="block px-4 py-2 hover:bg-primary-100">Hospital Equipment</Link>
-                  <Link to="/category/laboratory" className="block px-4 py-2 hover:bg-primary-100">Laboratory Supplies</Link>
-                  <Link to="/category/surgery" className="block px-4 py-2 hover:bg-primary-100">Surgery & ICU</Link>
-                  <Link to="/category/dental" className="block px-4 py-2 hover:bg-primary-100">Dental Equipment</Link>
-                  <Link to="/category/diagnostic" className="block px-4 py-2 hover:bg-primary-100">Diagnostic Equipment</Link>
-                  <Link to="/category/orthopedic" className="block px-4 py-2 hover:bg-primary-100">Orthopedic & Mobility</Link>
-                  <Link to="/category/disposables" className="block px-4 py-2 hover:bg-primary-100">Medical Disposables</Link>
-                  <Link to="/category/ppe" className="block px-4 py-2 hover:bg-primary-100">PPE & Safety</Link>
-                  <Link to="/category/pharmacy" className="block px-4 py-2 hover:bg-primary-100">Pharmacy Supplies</Link>
-                  <Link to="/category/emergency" className="block px-4 py-2 hover:bg-primary-100">Emergency & First Aid</Link>
+      {/* Categories Menu - Hidden in account routes */}
+      {!isAccountRoute && (
+        <div className="bg-primary-600">
+          <div className="container mx-auto px-4">
+            <nav className="flex items-center">
+              <div className="relative group">
+                <button className="flex items-center px-4 py-2 text-white hover:bg-primary-700 focus:outline-none">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  </svg>
+                  All Categories
+                </button>
+                <div className="absolute z-10 hidden group-hover:block bg-white shadow-lg text-gray-800 w-64">
+                  <div className="py-2">
+                    <Link to="/category/hospital-equipment" className="block px-4 py-2 hover:bg-primary-100">Hospital Equipment</Link>
+                    <Link to="/category/laboratory" className="block px-4 py-2 hover:bg-primary-100">Laboratory Supplies</Link>
+                    <Link to="/category/surgery" className="block px-4 py-2 hover:bg-primary-100">Surgery & ICU</Link>
+                    <Link to="/category/dental" className="block px-4 py-2 hover:bg-primary-100">Dental Equipment</Link>
+                    <Link to="/category/diagnostic" className="block px-4 py-2 hover:bg-primary-100">Diagnostic Equipment</Link>
+                    <Link to="/category/orthopedic" className="block px-4 py-2 hover:bg-primary-100">Orthopedic & Mobility</Link>
+                    <Link to="/category/disposables" className="block px-4 py-2 hover:bg-primary-100">Medical Disposables</Link>
+                    <Link to="/category/ppe" className="block px-4 py-2 hover:bg-primary-100">PPE & Safety</Link>
+                    <Link to="/category/pharmacy" className="block px-4 py-2 hover:bg-primary-100">Pharmacy Supplies</Link>
+                    <Link to="/category/emergency" className="block px-4 py-2 hover:bg-primary-100">Emergency & First Aid</Link>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="hidden md:flex">
-              <Link to="/new-arrivals" className="px-4 py-2 text-white hover:bg-primary-700">New Arrivals</Link>
-              <Link to="/best-sellers" className="px-4 py-2 text-white hover:bg-primary-700">Best Sellers</Link>
-              <Link to="/deals" className="px-4 py-2 text-white hover:bg-primary-700">Deals & Offers</Link>
-              <Link to="/brands" className="px-4 py-2 text-white hover:bg-primary-700">Top Brands</Link>
-              <Link to="/hospital-solutions" className="px-4 py-2 text-white hover:bg-primary-700">Hospital Solutions</Link>
-            </div>
-          </nav>
+              <div className="hidden md:flex">
+                <Link to="/new-arrivals" className="px-4 py-2 text-white hover:bg-primary-700">New Arrivals</Link>
+                <Link to="/best-sellers" className="px-4 py-2 text-white hover:bg-primary-700">Best Sellers</Link>
+                <Link to="/deals" className="px-4 py-2 text-white hover:bg-primary-700">Deals & Offers</Link>
+                <Link to="/brands" className="px-4 py-2 text-white hover:bg-primary-700">Top Brands</Link>
+                <Link to="/hospital-solutions" className="px-4 py-2 text-white hover:bg-primary-700">Hospital Solutions</Link>
+              </div>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Menu */}
       {isMenuOpen && (
