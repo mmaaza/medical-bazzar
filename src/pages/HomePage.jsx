@@ -2,6 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ui/ProductCard';
 import Hero from '../components/layout/Hero';
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+// Import required Swiper modules
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const HomePage = () => {
   // Medical supplies product data
@@ -67,60 +75,132 @@ const HomePage = () => {
       </div>
       
       {/* Features Section */}
-      <section className="py-8 md:py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
-              <div className="mr-4 bg-primary-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <section className="py-6 md:py-12">
+        <div className="container mx-auto px-3 md:px-4">
+          {/* Use Swiper on mobile, grid on larger screens */}
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-base md:text-lg mb-1">Fast Delivery</h3>
-                <p className="text-sm text-gray-600">On all orders over $50</p>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Fast Delivery</h3>
+                <p className="text-xs md:text-sm text-gray-600">On all orders over $50</p>
               </div>
             </div>
-            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
-              <div className="mr-4 bg-primary-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-base md:text-lg mb-1">24/7 Support</h3>
-                <p className="text-sm text-gray-600">Healthcare professionals available</p>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">24/7 Support</h3>
+                <p className="text-xs md:text-sm text-gray-600">Healthcare professionals available</p>
               </div>
             </div>
-            <div className="flex items-center bg-white p-4 md:p-6 rounded-lg shadow-md">
-              <div className="mr-4 bg-primary-100 p-3 rounded-full">
-                <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-base md:text-lg mb-1">Quality Guarantee</h3>
-                <p className="text-sm text-gray-600">FDA approved products</p>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Quality Guarantee</h3>
+                <p className="text-xs md:text-sm text-gray-600">FDA approved products</p>
               </div>
             </div>
+          </div>
+
+          {/* Mobile Swiper */}
+          <div className="sm:hidden">
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={16}
+              slidesPerView={1}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              loop={true}
+            >
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">Fast Delivery</h3>
+                    <p className="text-xs text-gray-600">On all orders over $50</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">24/7 Support</h3>
+                    <p className="text-xs text-gray-600">Healthcare professionals available</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">Quality Guarantee</h3>
+                    <p className="text-xs text-gray-600">FDA approved products</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+            </Swiper>
           </div>
         </div>
       </section>
 
       {/* Flash Deals Section */}
-      <section className="py-12 bg-gradient-to-br from-accent-50 to-primary-50">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
+      <section className="py-8 md:py-12 bg-gradient-to-br from-accent-50 to-primary-50">
+        <div className="container mx-auto px-3 md:px-4">
+          <div className="flex justify-between items-center mb-6 md:mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Medical Flash Deals</h2>
-              <p className="text-gray-600">Limited time offers on essential medical supplies</p>
+              <h2 className="text-2xl md:text-3xl font-bold">Medical Flash Deals</h2>
+              <p className="text-sm md:text-base text-gray-600">Limited time offers on essential medical supplies</p>
             </div>
-            <Link to="/flash-deals" className="text-primary-500 hover:text-primary-600 font-medium">View All</Link>
+            <Link to="/flash-deals" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {flashDeals.map(deal => (
-              <FlashDealCard key={deal.id} deal={deal} />
-            ))}
+          <div className="relative">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 3,
+                }
+              }}
+              className="flash-deals-swiper"
+            >
+              {flashDeals.map(deal => (
+                <SwiperSlide key={deal.id}>
+                  <FlashDealCard deal={deal} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>
@@ -128,39 +208,85 @@ const HomePage = () => {
       {/* Trending Categories */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Medical Categories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {trendingCategories.map(category => (
-              <Link key={category.id} to={`/category/${category.name.toLowerCase().replace(' ', '-')}`} className="group">
-                <div className="relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <img 
-                    src={category.image} 
-                    alt={category.name} 
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-white text-2xl font-bold mb-1">{category.name}</h3>
-                    <p className="text-primary-100">{category.count} products</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold">Medical Categories</h2>
+            </div>
+            <Link to="/categories" className="text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={20}
+            slidesPerView={1}
+            navigation
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 4000, disableOnInteraction: false }}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+              },
+              1024: {
+                slidesPerView: 3,
+              }
+            }}
+            className="categories-swiper"
+          >
+            {trendingCategories.map(category => (
+              <SwiperSlide key={category.id}>
+                <Link to={`/category/${category.name.toLowerCase().replace(' ', '-')}`} className="block group">
+                  <div className="relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img 
+                      src={category.image} 
+                      alt={category.name} 
+                      className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-white text-2xl font-bold mb-1">{category.name}</h3>
+                      <p className="text-primary-100">{category.count} products</p>
+                    </div>
+                  </div>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 
       {/* Featured Products */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Featured Medical Devices</h2>
-            <Link to="/products" className="text-primary-500 hover:text-primary-600 font-medium">View All</Link>
+          <div className="flex justify-between items-center mb-6 md:mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold">Featured Medical Devices</h2>
+              <p className="text-sm md:text-base text-gray-600">Top-rated medical equipment and supplies</p>
+            </div>
+            <Link to="/products" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="relative">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 4,
+                }
+              }}
+              className="flash-deals-swiper"
+            >
+              {featuredProducts.map(product => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard product={product} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>
@@ -190,14 +316,37 @@ const HomePage = () => {
       {/* New Arrivals */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">New Medical Supplies</h2>
-            <Link to="/new-arrivals" className="text-primary-500 hover:text-primary-600 font-medium">View All</Link>
+          <div className="flex justify-between items-center mb-6 md:mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold">New Medical Supplies</h2>
+              <p className="text-sm md:text-base text-gray-600">Latest additions to our medical inventory</p>
+            </div>
+            <Link to="/new-arrivals" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {newArrivals.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="relative">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                1024: {
+                  slidesPerView: 4,
+                }
+              }}
+              className="flash-deals-swiper"
+            >
+              {newArrivals.map(product => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard product={product} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
       </section>

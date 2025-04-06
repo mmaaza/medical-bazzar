@@ -396,7 +396,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-primary-700 text-white">
+        <div className="md:hidden bg-white-700 text-white">
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/new-arrivals"
