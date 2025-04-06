@@ -31,7 +31,32 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+const MAX_PORT_ATTEMPTS = 10;
 
-app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+const startServer = (port) => {
+    try {
+        const server = app.listen(port, () => {
+            console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`);
+        });
+
+        server.on('error', (e) => {
+            if (e.code === 'EADDRINUSE') {
+                console.log(`Port ${port} is busy, trying port ${port + 1}...`);
+                if (port - PORT < MAX_PORT_ATTEMPTS) {
+                    startServer(port + 1);
+                } else {
+                    console.error('Could not find an available port. Please free up some ports or specify a different port in .env');
+                    process.exit(1);
+                }
+            } else {
+                console.error('Server error:', e);
+                process.exit(1);
+            }
+        });
+    } catch (err) {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    }
+};
+
+startServer(PORT);

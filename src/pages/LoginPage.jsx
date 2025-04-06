@@ -31,7 +31,7 @@ const LoginPage = () => {
 
       // Redirect to intended page or home
       const from = location.state?.from?.pathname || '/';
-      navigate(from);
+      navigate(from, { replace: true }); // Using replace to prevent back button from returning to login
     } catch (error) {
       setError('Failed to sign in: ' + (error.message || error.error));
     } finally {
