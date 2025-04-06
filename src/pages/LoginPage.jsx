@@ -41,7 +41,7 @@ const LoginPage = () => {
 
   const handleResendVerification = async () => {
     try {
-      await fetch(`${process.env.VITE_API_URL}/api/auth/resend-verification`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/resend-verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
