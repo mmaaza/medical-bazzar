@@ -62,7 +62,9 @@ const HomePage = () => {
 
   return (
     <div className="bg-gray-50">
-      <Hero />
+      <div className="-mt-0 -pt-0">
+        <Hero />
+      </div>
       
       {/* Features Section */}
       <section className="py-8 md:py-12">

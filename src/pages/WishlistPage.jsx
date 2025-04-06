@@ -24,11 +24,11 @@ const WishlistPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-mobile-h1 md:text-3xl lg:text-4xl font-bold font-heading text-gray-900">My Wishlist</h1>
-          <p className="mt-2 text-gray-600 text-sm md:text-base">
-            {wishlistItems.length} items saved to your wishlist
+      <div className="">
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-1">My Wishlist</h2>
+          <p className="text-sm text-gray-500">
+            {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved to your wishlist
           </p>
         </div>
 

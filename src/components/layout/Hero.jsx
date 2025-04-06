@@ -59,7 +59,7 @@ const Hero = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="relative w-full h-[250px] md:h-[450px] bg-gray-100 overflow-hidden">
+    <section className="relative w-full h-auto md:h-[450px] bg-gray-100 overflow-hidden -mt-0 md:mt-0">
       <div className="embla h-full" ref={emblaRef}>
         <div className="embla__container h-full flex">
           {slides.map((slide, index) => (
@@ -68,7 +68,7 @@ const Hero = () => {
                 <img
                   src={slide.image}
                   alt={`Slide ${index + 1}`}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-contain md:object-cover object-center"
                   loading={index === 0 ? "eager" : "lazy"}
                 />
               </Link>
