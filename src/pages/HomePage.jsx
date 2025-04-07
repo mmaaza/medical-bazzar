@@ -306,7 +306,7 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="md:w-1/2">
-                <img src="https://via.placeholder.com/600x400?text=COVID+Essentials" alt="COVID Essentials" className="w-full h-full object-cover" />
+                <img src="https://placehold.co/600x400?text=COVID+Essentials" alt="COVID Essentials" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
@@ -400,7 +400,7 @@ const HomePage = () => {
               </div>
               <p className="text-gray-700 mb-6">"The blood pressure monitor I purchased is incredibly accurate and easy to use. As a healthcare professional, I highly recommend MediSanj products."</p>
               <div className="flex items-center">
-                <img className="w-12 h-12 rounded-full mr-4" src="https://via.placeholder.com/48x48" alt="Customer" />
+                <img className="w-12 h-12 rounded-full mr-4" src="https://placehold.co/48x48" alt="Customer" />
                 <div>
                   <h4 className="font-semibold">Dr. Sarah Johnson</h4>
                   <p className="text-sm text-gray-500">Verified Customer</p>
@@ -427,7 +427,7 @@ const HomePage = () => {
               </div>
               <p className="text-gray-700 mb-6">"I needed diabetic testing supplies urgently and MediSanj delivered next day. The quality is excellent and prices are much better than my local pharmacy."</p>
               <div className="flex items-center">
-                <img className="w-12 h-12 rounded-full mr-4" src="https://via.placeholder.com/48x48" alt="Customer" />
+                <img className="w-12 h-12 rounded-full mr-4" src="https://placehold.co/48x48" alt="Customer" />
                 <div>
                   <h4 className="font-semibold">Robert Chen</h4>
                   <p className="text-sm text-gray-500">Verified Customer</p>
@@ -454,7 +454,7 @@ const HomePage = () => {
               </div>
               <p className="text-gray-700 mb-6">"Our clinic has been ordering supplies from MediSanj for over a year now. Their products are reliable, delivery is prompt, and customer service is exceptional."</p>
               <div className="flex items-center">
-                <img className="w-12 h-12 rounded-full mr-4" src="https://via.placeholder.com/48x48" alt="Customer" />
+                <img className="w-12 h-12 rounded-full mr-4" src="https://placehold.co/48x48" alt="Customer" />
                 <div>
                   <h4 className="font-semibold">Maria Rodriguez, RN</h4>
                   <p className="text-sm text-gray-500">Clinic Manager</p>
@@ -472,7 +472,7 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center items-center gap-10">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="grayscale hover:grayscale-0 transition-all duration-300">
-                <img src={`https://via.placeholder.com/150x50?text=MedBrand${index + 1}`} alt={`Medical Brand ${index + 1}`} className="h-12" />
+                <img src={`https://placehold.co/150x50?text=MedBrand${index + 1}`} alt={`Medical Brand ${index + 1}`} className="h-12" />
               </div>
             ))}
           </div>

@@ -10,7 +10,12 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ServerErrorPage from './pages/ServerErrorPage';
-import WishlistPage from './pages/WishlistPage';
+import WishlistPage from './pages/account/WishlistPage';
+// Import account pages
+import DashboardPage from './pages/account/DashboardPage';
+import OrdersPage from './pages/account/OrdersPage';
+import ProfilePage from './pages/account/ProfilePage';
+import SettingsPage from './pages/account/SettingsPage';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/auth/PrivateRoute';
 
@@ -19,13 +24,6 @@ const CategoryPage = () => <div className="container mx-auto px-4 py-10"><h1 cla
 const ProductPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Product Page</h1></div>;
 const CartPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Cart Page</h1></div>;
 const CheckoutPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Checkout Page</h1></div>;
-
-// Dashboard Pages
-const DashboardPage = () => <div><h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1></div>;
-const DashboardOrdersPage = () => <div><h1 className="text-2xl font-bold mb-6">My Orders</h1></div>;
-const DashboardWishlistPage = () => <div><h1 className="text-2xl font-bold mb-6">My Wishlist</h1></div>;
-const DashboardProfilePage = () => <div><h1 className="text-2xl font-bold mb-6">My Profile</h1></div>;
-const DashboardSettingsPage = () => <div><h1 className="text-2xl font-bold mb-6">Account Settings</h1></div>;
 
 function App() {
   return (
@@ -79,10 +77,10 @@ function App() {
               }
             >
               <Route index element={<DashboardPage />} />
-              <Route path="orders" element={<DashboardOrdersPage />} />
+              <Route path="orders" element={<OrdersPage />} />
               <Route path="wishlist" element={<WishlistPage />} />
-              <Route path="profile" element={<DashboardProfilePage />} />
-              <Route path="settings" element={<DashboardSettingsPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
             
             {/* Error Routes */}
