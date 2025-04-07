@@ -1,10 +1,10 @@
-# MediSanj Platform Requirements
+# Medical Bazzar Nepal Platform Requirements
 
 ## Overview
-MediSanj is a multivendor medical supply platform where all products appear under the MediSanj brand to customers. The platform connects vendors with customers while maintaining brand consistency and centralized management.
+Medical Bazzar Nepal is a multivendor medical supply platform where all products appear under the Medical Bazzar Nepal brand to customers. The platform connects vendors with customers while maintaining brand consistency and centralized management.
 
 ## Vendor Management
-- Vendors remain anonymous to customers (clients see only MediSanj branding)
+- Vendors remain anonymous to customers (clients see only Medical Bazzar Nepal branding)
 - Vendor accounts created and managed by admin
 - Vendor products added by admin
 - Vendor details hidden from public view
@@ -21,7 +21,7 @@ MediSanj is a multivendor medical supply platform where all products appear unde
   - Product name
   - Product brand
   - Product quantity
-  - Vendor name and MediSanj branding at the top
+  - Vendor name and Medical Bazzar Nepal branding at the top
 
 ## Admin Capabilities
 - Super admin can:
@@ -44,7 +44,7 @@ MediSanj is a multivendor medical supply platform where all products appear unde
 
 ## Customer Experience
 - Checkout process completed in 3 steps
-- Products displayed under MediSanj brand only
+- Products displayed under Medical Bazzar Nepal brand only
 
 ### Interactive Features
 - "Chat with Us" functionality

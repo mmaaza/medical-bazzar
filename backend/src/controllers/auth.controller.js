@@ -1,5 +1,5 @@
 const User = require('../models/user.model');
-const { sendVerificationEmail, sendPasswordResetEmail } = require('../services/email.service');
+const { sendVerificationEmail, sendPasswordResetEmail, sendVerificationOTP } = require('../services/email.service');
 const crypto = require('crypto');
 
 // Helper function to send token response
@@ -24,22 +24,33 @@ const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check if user exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email already registered'
+      });
+    }
+
     // Create user
-    const user = await User.create({
+    user = await User.create({
       name,
       email,
       password
     });
 
-    // Generate email verification token
-    const verificationToken = user.generateEmailVerificationToken();
+    // Generate OTP
+    const verificationOTP = user.generateEmailVerificationOTP();
     await user.save();
 
-    // Send verification email
-    await sendVerificationEmail(user.email, verificationToken);
+    // Send OTP email
+    await sendVerificationOTP(user.email, verificationOTP);
 
-    // Send token to client
-    sendTokenResponse(user, 201, res);
+    res.status(201).json({
+      success: true,
+      message: 'OTP sent to your email'
+    });
   } catch (error) {
     res.status(400).json({
       success: false,
@@ -90,49 +101,101 @@ const login = async (req, res) => {
   }
 };
 
-// @desc    Verify email
-// @route   GET /api/auth/verify-email/:token
+// @desc    Verify email with OTP
+// @route   POST /api/auth/verify-email
 const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    const { email, otp } = req.body;
+    
+    console.log(`Verifying email for ${email} with OTP ${otp}`);
 
-    // Hash token
-    const emailVerificationToken = crypto
-      .createHash('sha256')
-      .update(token)
-      .digest('hex');
-
-    const user = await User.findOne({
-      emailVerificationToken,
-      emailVerificationExpire: { $gt: Date.now() }
-    });
-
-    if (!user) {
+    // Check if user is already verified
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+    
+    if (existingUser.isEmailVerified) {
+      console.log(`User ${email} is already verified, returning error`);
       return res.status(400).json({
         success: false,
-        error: 'Invalid or expired verification token'
+        error: 'Email already verified'
       });
     }
 
+    // Hash OTP
+    const hashedOTP = crypto
+      .createHash('sha256')
+      .update(otp)
+      .digest('hex');
+      
+    console.log(`Looking for user with email ${email} and matching OTP hash`);
+
+    // Find user with matching OTP
+    const user = await User.findOne({
+      email,
+      emailVerificationOTP: hashedOTP,
+      emailVerificationOTPExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      // Find user by email to handle invalid OTP case
+      const existingUser = await User.findOne({ email });
+      if (existingUser && !existingUser.isEmailVerified) {
+        console.log('User found but OTP invalid or expired');
+        
+        // Only clear OTP if it has expired
+        if (existingUser.emailVerificationOTPExpire < Date.now()) {
+          console.log('OTP has expired');
+          existingUser.emailVerificationOTP = undefined;
+          existingUser.emailVerificationOTPExpire = undefined;
+          await existingUser.save();
+          
+          return res.status(400).json({
+            success: false,
+            error: 'The verification code has expired. Please request a new one.'
+          });
+        }
+        
+        // If OTP hasn't expired but is incorrect
+        console.log('OTP is incorrect');
+        return res.status(400).json({
+          success: false,
+          error: 'Incorrect verification code. Please try again.'
+        });
+      }
+      
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid verification attempt. Please try again.'
+      });
+    }
+
+    console.log(`OTP valid for ${email}, marking as verified`);
+    
     // Set email as verified
     user.isEmailVerified = true;
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpire = undefined;
+    user.emailVerificationOTP = undefined;
+    user.emailVerificationOTPExpire = undefined;
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Email verified successfully'
-    });
+    console.log(`User ${email} verified successfully, sending token response`);
+
+    // Send token response for automatic login
+    sendTokenResponse(user, 200, res);
   } catch (error) {
+    console.error('Email verification error:', error);
     res.status(400).json({
       success: false,
-      error: error.message
+      error: error.message || 'Verification failed'
     });
   }
 };
 
-// @desc    Resend verification email
+// @desc    Resend verification OTP
 // @route   POST /api/auth/resend-verification
 const resendVerification = async (req, res) => {
   try {
@@ -154,16 +217,20 @@ const resendVerification = async (req, res) => {
       });
     }
 
-    // Generate new verification token
-    const verificationToken = user.generateEmailVerificationToken();
+    // Clear any existing OTP before generating new one
+    user.emailVerificationOTP = undefined;
+    user.emailVerificationOTPExpire = undefined;
+
+    // Generate new OTP
+    const verificationOTP = user.generateEmailVerificationOTP();
     await user.save();
 
     // Send verification email
-    await sendVerificationEmail(user.email, verificationToken);
+    await sendVerificationOTP(user.email, verificationOTP);
 
     res.status(200).json({
       success: true,
-      message: 'Verification email sent'
+      message: 'New OTP sent to your email'
     });
   } catch (error) {
     res.status(400).json({

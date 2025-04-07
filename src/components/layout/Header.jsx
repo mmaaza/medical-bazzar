@@ -48,11 +48,13 @@ const Header = () => {
   return (
     <header
       className={`bg-primary-500 text-white shadow-md ${
-        !isAccountRoute ? "sticky top-0" : "h-16"
+        !isAccountRoute 
+          ? "sticky top-0 md:h-[88px]" // 56px for top bar + 32px for categories
+          : "h-16"
       } z-50`}
     >
       {/* Top Navigation Bar */}
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-3 h-14">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
@@ -231,42 +233,6 @@ const Header = () => {
             )}
           </button>
         </div>
-
-        {/* Mobile Search - Visible only on mobile */}
-        {!isAccountRoute && (
-          <div className="mt-3 md:hidden">
-            <form onSubmit={handleSearch} className="w-full">
-              <div className="relative">
-                <input
-                  type="text"
-                  className="w-full py-2 px-4 pr-10 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent-400"
-                  placeholder="Search medical supplies..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button
-                  type="submit"
-                  className="absolute right-0 top-0 mt-2 mr-3 text-gray-600 hover:text-primary-500"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
       </div>
 
       {/* Categories Menu - Hidden in account routes */}
@@ -396,7 +362,40 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white-700 text-white">
+        <div className="md:hidden bg-primary-600 text-white">
+          {/* Mobile Search */}
+          <div className="px-4 py-3 border-b border-primary-500">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative">
+                <input
+                  type="text"
+                  className="w-full py-2 px-4 pr-10 rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent-400"
+                  placeholder="Search medical supplies..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="absolute right-0 top-0 mt-2 mr-3 text-gray-600 hover:text-primary-500"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/new-arrivals"

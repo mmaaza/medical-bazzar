@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
     const value = {
         currentUser,
+        setCurrentUser, // Expose setCurrentUser to components
         signup,
         login,
         logout,

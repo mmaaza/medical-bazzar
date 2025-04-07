@@ -1,6 +1,6 @@
-# MediSanj Design Language Guide
+# Medical Bazzar Nepal Design Language Guide
 
-This document outlines the design language and theme for the MediSanj medical supplies e-commerce platform. Use this guide to maintain visual consistency across all pages and components.
+This document outlines the design language and theme for the Medical Bazzar Nepal medical supplies e-commerce platform. Use this guide to maintain visual consistency across all pages and components.
 
 ## Design Philosophy
 **Mobile-First Approach**: Always design for mobile screens first, then scale up to larger screens. Mobile experience should feel like a native app rather than a responsive website.

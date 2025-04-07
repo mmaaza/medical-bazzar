@@ -7,7 +7,7 @@ const DashboardLayout = () => {
   const { currentUser } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="md:h-[calc(100vh-88px)] bg-gray-50 flex flex-col">
       {/* Mobile Header */}
       <div className="md:hidden bg-white shadow-lg px-4 py-4 flex items-center justify-between border-b border-gray-200 sticky top-0 z-10">
         <div className="flex items-center space-x-4">
@@ -21,9 +21,9 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex md:overflow-hidden">
         {/* Sidebar - Hidden on mobile */}
-        <aside className="hidden md:block w-72 flex-shrink-0 bg-white shadow-xl h-screen sticky top-0">
+        <aside className="hidden md:block w-72 flex-shrink-0 bg-white shadow-xl md:h-full">
           <div className="h-full flex flex-col">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center space-x-3">
@@ -45,7 +45,7 @@ const DashboardLayout = () => {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8 md:overflow-y-auto">
           <Outlet />
         </main>
 
