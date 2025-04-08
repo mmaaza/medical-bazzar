@@ -42,6 +42,26 @@ const userSchema = new mongoose.Schema({
   emailVerificationOTPExpire: Date,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  totalOrders: {
+    type: Number,
+    default: 0
+  },
+  totalSpent: {
+    type: Number,
+    default: 0
+  },
+  status: {
+    type: String,
+    enum: ['active', 'blocked', 'unverified'],
+    default: 'unverified'
+  },
+  blockReason: {
+    type: String,
+    default: null
+  },
+  lastPurchase: {
+    type: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now

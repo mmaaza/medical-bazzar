@@ -176,8 +176,9 @@ const verifyEmail = async (req, res) => {
 
     console.log(`OTP valid for ${email}, marking as verified`);
     
-    // Set email as verified
+    // Set email as verified and update status to active
     user.isEmailVerified = true;
+    user.status = 'active';
     user.emailVerificationOTP = undefined;
     user.emailVerificationOTPExpire = undefined;
     await user.save();

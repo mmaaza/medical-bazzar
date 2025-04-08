@@ -26,6 +26,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/users', require('./routes/users.routes'));
 
 // Error handler
 app.use(errorHandler);
