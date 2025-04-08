@@ -31,6 +31,11 @@ import MediaPage from './pages/admin/MediaPage';
 import UsersPage from './pages/admin/UsersPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 import AdminOrdersPage from './pages/admin/OrdersPage';
+import AnalyticsPage from './pages/admin/AnalyticsPage';
+import ProductsPage from './pages/admin/ProductsPage';
+import CategoriesPage from './pages/admin/CategoriesPage';
+import BrandsPage from './pages/admin/BrandsPage';
+import { LoadingProvider } from './contexts/LoadingContext';
 
 // For demo purposes - these would be actual page components in a full implementation
 const CategoryPage = () => <div className="container mx-auto px-4 py-10"><h1 className="text-3xl font-bold">Category Page</h1></div>;
@@ -113,15 +118,19 @@ function App() {
             path="/admin"
             element={
               <AdminRoute>
-                <AdminLayout />
+                <LoadingProvider>
+                  <AdminLayout />
+                </LoadingProvider>
               </AdminRoute>
             }
           >
             <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<div>Products Page</div>} />
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="categories" element={<CategoriesPage />} />
+            <Route path="brands" element={<BrandsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="customers" element={<div>Customers Page</div>} />
-            <Route path="analytics" element={<div>Analytics Page</div>} />
+            <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route path="media" element={<MediaPage />} />
             <Route path="users" element={<UsersPage />} />

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const StatCard = ({ title, value, icon, trend, trendValue }) => (
   <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 relative overflow-hidden">
@@ -70,6 +71,23 @@ const RecentOrderRow = ({ order }) => (
 );
 
 const AdminDashboard = () => {
+  const { startLoading, stopLoading } = useLoading();
+
+  useEffect(() => {
+    // Simulate loading data
+    const loadDashboardData = async () => {
+      startLoading();
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      } finally {
+        stopLoading();
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
   // Sample data - replace with real data from your backend
   const stats = [
     {

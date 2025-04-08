@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const navigation = [
   {
@@ -27,6 +28,24 @@ const navigation = [
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+    )
+  },
+  {
+    name: 'Categories',
+    path: '/admin/categories',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+      </svg>
+    )
+  },
+  {
+    name: 'Brands',
+    path: '/admin/brands',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
       </svg>
     )
   },
@@ -99,6 +118,7 @@ const navigation = [
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const { isLoading } = useLoading(); // Replace local loading state with context
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
@@ -189,7 +209,7 @@ const AdminLayout = () => {
       {/* Main Content Area - Fixed Height */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Admin Topbar - Fixed */}
-        <header className="bg-white shadow-sm flex-shrink-0 border-b">
+        <header className="bg-white shadow-sm flex-shrink-0 border-b relative">
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
             {/* Left side with menu button and breadcrumb */}
             <div className="flex items-center">
@@ -282,6 +302,8 @@ const AdminLayout = () => {
               </div>
             </div>
           </div>
+          {/* Loading Bar */}
+          <div className={`absolute bottom-0 left-0 h-0.5 bg-primary-500 transition-all duration-300 ${isLoading ? 'w-full' : 'w-0'}`}></div>
         </header>
 
         {/* Main Content with Scrollable Area */}
