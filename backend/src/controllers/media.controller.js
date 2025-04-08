@@ -1,7 +1,15 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 const Media = require('../models/media.model');
+
+// Define resize presets
+const RESIZE_PRESETS = {
+  original: null,
+  product: { width: 800, height: 800 },
+  thumbnail: { width: 300, height: 300 }
+};
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -53,6 +61,22 @@ const upload = multer({
   }
 });
 
+const processImage = async (file, size) => {
+  if (!size) return file.path; // Return original path if no resize needed
+  
+  const ext = path.extname(file.path);
+  const resizedPath = file.path.replace(ext, `_${size.width}x${size.height}${ext}`);
+  
+  await sharp(file.path)
+    .resize(size.width, size.height, {
+      fit: 'contain',
+      background: { r: 255, g: 255, b: 255, alpha: 1 }
+    })
+    .toFile(resizedPath);
+    
+  return resizedPath;
+};
+
 // @desc    Upload media files
 // @route   POST /api/media/upload
 // @access  Private
@@ -65,18 +89,40 @@ const uploadMedia = async (req, res) => {
       });
     }
 
+    const resizeOption = req.body.resize || 'original';
+    if (!RESIZE_PRESETS.hasOwnProperty(resizeOption)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid resize option'
+      });
+    }
+
     const mediaItems = await Promise.all(
       req.files.map(async (file) => {
+        let processedPath = file.path;
+        
+        // Only process images
+        if (file.mimetype.startsWith('image/')) {
+          processedPath = await processImage(file, RESIZE_PRESETS[resizeOption]);
+        }
+        
         // Store URL path relative to the frontend public directory
-        const url = `/uploads/${path.basename(file.path)}`;
+        const url = `/uploads/${path.basename(processedPath)}`;
         
         const media = await Media.create({
           name: file.originalname,
           type: file.mimetype,
           size: file.size,
           url: url,
-          createdBy: req.user.id
+          createdBy: req.user.id,
+          resizeOption: resizeOption
         });
+        
+        // Delete original file if it was resized
+        if (processedPath !== file.path) {
+          fs.unlinkSync(file.path);
+        }
+        
         return media;
       })
     );

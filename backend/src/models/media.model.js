@@ -17,6 +17,11 @@ const mediaSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  resizeOption: {
+    type: String,
+    enum: ['original', 'product', 'thumbnail'],
+    default: 'original'
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

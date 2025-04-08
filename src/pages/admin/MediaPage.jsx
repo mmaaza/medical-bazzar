@@ -2,12 +2,65 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import api from "../../services/api";
 
+// Delete Confirmation Modal Component
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4">
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
+
+        {/* Modal */}
+        <div className="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+          <div className="mb-6">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-secondary-100 mb-4">
+              <svg className="h-6 w-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 text-center">Delete Media Item</h3>
+            <p className="mt-2 text-sm text-gray-500 text-center">
+              Are you sure you want to delete this media item? This action cannot be undone.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={onClose}
+              className="w-full sm:w-1/2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-sm font-medium transition duration-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="w-full sm:w-1/2 px-4 py-2 bg-secondary-500 text-white hover:bg-secondary-600 rounded-md text-sm font-medium transition duration-300"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MediaPage = () => {
   const [mediaItems, setMediaItems] = useState([]);
   const [view, setView] = useState("grid");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedResizeOption, setSelectedResizeOption] = useState("original");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const fileInputRef = useRef(null);
+
+  const resizeOptions = [
+    { value: "original", label: "Original Size" },
+    { value: "product", label: "Product Photo (800x800)" },
+    { value: "thumbnail", label: "Thumbnail (300x300)" }
+  ];
 
   useEffect(() => {
     fetchMediaItems();
@@ -37,6 +90,7 @@ const MediaPage = () => {
     files.forEach(file => {
       formData.append("files", file);
     });
+    formData.append("resize", selectedResizeOption);
 
     try {
       await api.post("/media/upload", formData, {
@@ -61,16 +115,29 @@ const MediaPage = () => {
     }
   };
 
-  const handleDelete = async (mediaId) => {
-    if (!window.confirm("Are you sure you want to delete this media item?")) {
+  const handleDeleteClick = (item) => {
+    if (!item?._id) {
+      console.error('Invalid media item:', item);
       return;
     }
+    setItemToDelete(item._id);
+    setDeleteModalOpen(true);
+  };
 
+  const handleConfirmDelete = async () => {
     try {
-      await api.delete(`/media/${mediaId}`);
-      setMediaItems(prev => prev.filter(item => item.id !== mediaId));
+      if (!itemToDelete) {
+        console.error('No item ID provided for deletion');
+        return;
+      }
+      
+      await api.delete(`/media/${itemToDelete}`);
+      setMediaItems(prev => prev.filter(item => item._id !== itemToDelete));
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
     } catch (error) {
-      console.error("Error deleting media item:", error);
+      console.error("Error deleting media item:", error.response?.data?.message || error.message);
+      // Here you could add a toast notification to show the error to the user
     }
   };
 
@@ -126,7 +193,7 @@ const MediaPage = () => {
             <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-300">
               <div className="flex justify-end">
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDeleteClick(item)}
                   className="p-2 rounded-full bg-red-500/80 text-white hover:bg-red-600 transition-colors"
                   title="Delete"
                 >
@@ -167,7 +234,7 @@ const MediaPage = () => {
                 </p>
               </div>
               <button
-                onClick={() => handleDelete(item.id)}
+                onClick={() => handleDeleteClick(item)}
                 className="p-2 rounded-full text-red-500 hover:bg-red-50"
               >
                 <svg
@@ -208,13 +275,30 @@ const MediaPage = () => {
             onChange={handleFileChange}
             multiple
           />
-          <button
-            onClick={handleUploadClick}
-            disabled={isUploading}
-            className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUploading ? `Uploading ${uploadProgress}%` : "Upload Media"}
-          </button>
+          <div className="flex items-center gap-3">
+            <select
+              value={selectedResizeOption}
+              onChange={(e) => setSelectedResizeOption(e.target.value)}
+              className="block w-full md:w-auto px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+            >
+              {resizeOptions.map(option => (
+                <option 
+                  key={option.value} 
+                  value={option.value}
+                  className="py-2 text-gray-700"
+                >
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleUploadClick}
+              disabled={isUploading}
+              className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUploading ? `Uploading ${uploadProgress}%` : "Upload Media"}
+            </button>
+          </div>
           <div className="flex rounded-md shadow-sm">
             <button
               onClick={() => setView("grid")}
@@ -315,13 +399,23 @@ const MediaPage = () => {
             }
           >
             {mediaItems.map((item) => (
-              <React.Fragment key={item._id || item.id}>
+              <React.Fragment key={item._id}>
                 {renderMediaItem(item)}
               </React.Fragment>
             ))}
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
