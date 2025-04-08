@@ -36,6 +36,7 @@ import AnalyticsPage from './pages/admin/AnalyticsPage';
 import ProductsPage from './pages/admin/ProductsPage';
 import CategoriesPage from './pages/admin/CategoriesPage';
 import BrandsPage from './pages/admin/BrandsPage';
+import VendorsPage from './pages/admin/VendorsPage';
 import { LoadingProvider } from './contexts/LoadingContext';
 
 // For demo purposes - these would be actual page components in a full implementation
@@ -129,6 +130,7 @@ function App() {
             <Route path="products" element={<ProductsPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="brands" element={<BrandsPage />} />
+            <Route path="vendors" element={<VendorsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="customers" element={<CustomersPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />

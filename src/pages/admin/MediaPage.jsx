@@ -1,8 +1,195 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import api from "../../services/api";
 
 const MediaPage = () => {
   const [mediaItems, setMediaItems] = useState([]);
-  const [view, setView] = useState("grid"); // 'grid' or 'list'
+  const [view, setView] = useState("grid");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    fetchMediaItems();
+  }, []);
+
+  const fetchMediaItems = async () => {
+    try {
+      const response = await api.get("/media");
+      setMediaItems(response.data.media);
+    } catch (error) {
+      console.error("Error fetching media items:", error);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append("files", file);
+    });
+
+    try {
+      await api.post("/media/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(progress);
+        },
+      });
+
+      await fetchMediaItems();
+      setIsUploading(false);
+      setUploadProgress(0);
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleDelete = async (mediaId) => {
+    if (!window.confirm("Are you sure you want to delete this media item?")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/media/${mediaId}`);
+      setMediaItems(prev => prev.filter(item => item.id !== mediaId));
+    } catch (error) {
+      console.error("Error deleting media item:", error);
+    }
+  };
+
+  const renderMediaItem = (item) => {
+    const isImage = item.type.startsWith("image/");
+    const isVideo = item.type.startsWith("video/");
+    const isDocument = !isImage && !isVideo;
+
+    return (
+      <div
+        className={`${
+          view === "grid"
+            ? "relative group aspect-square overflow-hidden rounded-lg border border-gray-200"
+            : "flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-lg"
+        }`}
+      >
+        <div className={view === "grid" ? "h-full w-full" : "flex-shrink-0 h-16 w-16"}>
+          {isImage && (
+            <img
+              src={item.url}
+              alt={item.name}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          )}
+          {isVideo && (
+            <video
+              src={item.url}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          )}
+          {isDocument && (
+            <div className="h-full w-full flex items-center justify-center bg-gray-100">
+              <svg
+                className="h-8 w-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        {view === "grid" && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-300">
+              <div className="flex justify-end">
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="p-2 rounded-full bg-red-500/80 text-white hover:bg-red-600 transition-colors"
+                  title="Delete"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="text-white">
+                <p className="font-medium truncate text-xs">
+                  {item.name}
+                </p>
+                <p className="text-xs text-gray-300 mt-0.5">
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {view === "list" && (
+          <div className="flex-1">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-gray-900 font-medium">{item.name}</p>
+                <p className="text-sm text-gray-500">
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <button
+                onClick={() => handleDelete(item.id)}
+                className="p-2 rounded-full text-red-500 hover:bg-red-50"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -14,8 +201,19 @@ const MediaPage = () => {
           </p>
         </div>
         <div className="flex gap-4">
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600">
-            Upload Media
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+            multiple
+          />
+          <button
+            onClick={handleUploadClick}
+            disabled={isUploading}
+            className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isUploading ? `Uploading ${uploadProgress}%` : "Upload Media"}
           </button>
           <div className="flex rounded-md shadow-sm">
             <button
@@ -87,7 +285,10 @@ const MediaPage = () => {
               Get started by uploading your first media file.
             </p>
             <div className="mt-6">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600">
+              <button
+                onClick={handleUploadClick}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600"
+              >
                 <svg
                   className="-ml-1 mr-2 h-5 w-5"
                   fill="none"
@@ -109,21 +310,14 @@ const MediaPage = () => {
           <div
             className={
               view === "grid"
-                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                ? "grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
                 : "space-y-2"
             }
           >
             {mediaItems.map((item) => (
-              <div
-                key={item.id}
-                className={`${
-                  view === "grid"
-                    ? "relative group aspect-square"
-                    : "flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-lg"
-                }`}
-              >
-                {/* Media item content here */}
-              </div>
+              <React.Fragment key={item._id || item.id}>
+                {renderMediaItem(item)}
+              </React.Fragment>
             ))}
           </div>
         )}
