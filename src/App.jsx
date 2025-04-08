@@ -29,6 +29,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import BlogPage from './pages/admin/BlogPage';
 import MediaPage from './pages/admin/MediaPage';
 import UsersPage from './pages/admin/UsersPage';
+import CustomersPage from './pages/admin/CustomersPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 import AdminOrdersPage from './pages/admin/OrdersPage';
 import AnalyticsPage from './pages/admin/AnalyticsPage';
@@ -129,7 +130,7 @@ function App() {
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="brands" element={<BrandsPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="customers" element={<div>Customers Page</div>} />
+            <Route path="customers" element={<CustomersPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route path="media" element={<MediaPage />} />

@@ -54,7 +54,7 @@ const RecentOrderRow = ({ order }) => (
       </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <span className="text-sm text-gray-900">${order.amount}</span>
+      <span className="text-sm text-gray-900">रु{order.amount}</span>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
   const stats = [
     {
       title: 'Total Revenue',
-      value: '$12,345',
+      value: 'रु12,345',
       trend: 'up',
       trendValue: '12%',
       icon: (
