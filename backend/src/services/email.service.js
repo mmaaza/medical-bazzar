@@ -9,6 +9,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// General email sending function
+const sendEmail = async ({ to, subject, html }) => {
+  const message = {
+    from: process.env.EMAIL_FROM,
+    to,
+    subject,
+    html,
+  };
+
+  await transporter.sendMail(message);
+};
+
 const sendVerificationOTP = async (email, otp) => {
   const message = {
     from: process.env.EMAIL_FROM,
@@ -85,6 +97,7 @@ const sendPasswordResetEmail = async (email, resetToken) => {
 };
 
 module.exports = {
+  sendEmail,
   sendVerificationOTP,
   sendPasswordResetEmail
 };

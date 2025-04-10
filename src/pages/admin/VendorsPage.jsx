@@ -1,152 +1,754 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
 
-const VendorsPage = () => {
-  const { isLoading } = useLoading();
-  // Sample vendor data - would come from your backend in production
-  const [vendors] = useState([
-    {
-      id: 1,
-      name: 'Medical Supplies Co.',
-      email: 'supplies@example.com',
-      phone: '+977-9841234567',
-      status: 'active',
-      totalProducts: 45,
-      joinDate: '2025-01-15',
-      lastDelivery: '2025-04-05',
-      address: 'Kathmandu, Nepal'
-    },
-    {
-      id: 2,
-      name: 'Healthcare Equipment Ltd',
-      email: 'equipment@example.com',
-      phone: '+977-9851234567',
-      status: 'active',
-      totalProducts: 32,
-      joinDate: '2025-02-01',
-      lastDelivery: '2025-04-07',
-      address: 'Lalitpur, Nepal'
-    }
-  ]);
+const FormField = ({ label, name, type = "text", value, onChange, placeholder, required = true }) => (
+  <div className="space-y-1.5">
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      {label}
+    </label>
+    <input
+      type={type}
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      required={required}
+      className="block w-full rounded-lg border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6 transition duration-200 ease-in-out hover:border-gray-400"
+      placeholder={placeholder}
+    />
+  </div>
+);
 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'inactive':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'suspended':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+// Skeleton loader component for vendors table
+const VendorSkeletonLoader = () => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="flex items-center">
+        <div className="w-full">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
+          <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+        </div>
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
+      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right">
+      <div className="flex justify-end space-x-3">
+        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+        <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+      </div>
+    </td>
+  </tr>
+);
+
+const VendorsPage = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const { isLoading, startLoading, stopLoading } = useLoading();
+  const [vendors, setVendors] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState(null);
+  const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
+  const [loginAsVendorLoading, setLoginAsVendorLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    businessName: '',
+    ownerName: '',
+    email: '',
+    phone: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zip: ''
+    },
+    registrationNumber: '',
+    panNumber: '',
+    bankDetails: {
+      accountName: '',
+      accountNumber: '',
+      bankName: '',
+      branch: ''
+    }
+  });
+
+  const fetchVendors = async () => {
+    try {
+      startLoading();
+      const response = await api.get('/vendors');
+      setVendors(response.data?.data || []);
+    } catch (error) {
+      console.error('Error fetching vendors:', error);
+      toast.error(error.response?.data?.error || 'Error fetching vendors');
+      setVendors([]);
+    } finally {
+      stopLoading();
+    }
+  };
+
+  useEffect(() => {
+    fetchVendors();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      startLoading();
+      const response = await api.post('/vendors', formData);
+      
+      if (response.data?.success) {
+        toast.success('Vendor created successfully');
+        setShowForm(false);
+        fetchVendors();
+        setFormData({
+          businessName: '',
+          ownerName: '',
+          email: '',
+          phone: '',
+          address: { street: '', city: '', state: '', zip: '' },
+          registrationNumber: '',
+          panNumber: '',
+          bankDetails: {
+            accountName: '',
+            accountNumber: '',
+            bankName: '',
+            branch: ''
+          }
+        });
+      } else {
+        throw new Error(response.data?.error || 'Failed to create vendor');
+      }
+    } catch (error) {
+      console.error('Error creating vendor:', error);
+      toast.error(error.response?.data?.error || error.message || 'Error creating vendor');
+    } finally {
+      stopLoading();
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleLoginAsVendor = async (vendor) => {
+    try {
+      setLoginAsVendorLoading(true);
+      
+      navigate('/vendor/login', {
+        state: {
+          adminLoginAsVendor: true,
+          vendorEmail: vendor.email
+        }
+      });
+    } catch (error) {
+      console.error('Error logging in as vendor:', error);
+      toast.error('Failed to access vendor account');
+    } finally {
+      setLoginAsVendorLoading(false);
+    }
+  };
+
+  // Function to handle vendor status toggle
+  const handleStatusToggle = async (vendorId, currentStatus) => {
+    try {
+      setStatusUpdateLoading(true);
+      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+      
+      const response = await api.put(`/vendors/${vendorId}`, { status: newStatus });
+      
+      if (response.data?.success) {
+        toast.success(`Vendor ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`);
+        fetchVendors(); // Refresh the vendors list
+      } else {
+        throw new Error(response.data?.error || 'Failed to update vendor status');
+      }
+    } catch (error) {
+      console.error('Error updating vendor status:', error);
+      toast.error(error.response?.data?.error || error.message || 'Error updating vendor status');
+    } finally {
+      setStatusUpdateLoading(false);
+    }
+  };
+
+  // Function to open edit form with selected vendor data
+  const openEditForm = (vendor) => {
+    setSelectedVendor(vendor);
+    setFormData({
+      businessName: vendor.businessName || '',
+      ownerName: vendor.ownerName || '',
+      email: vendor.email || '',
+      phone: vendor.phone || '',
+      address: {
+        street: vendor.address?.street || '',
+        city: vendor.address?.city || '',
+        state: vendor.address?.state || '',
+        zip: vendor.address?.zip || ''
+      },
+      registrationNumber: vendor.registrationNumber || '',
+      panNumber: vendor.panNumber || '',
+      bankDetails: {
+        accountName: vendor.bankDetails?.accountName || '',
+        accountNumber: vendor.bankDetails?.accountNumber || '',
+        bankName: vendor.bankDetails?.bankName || '',
+        branch: vendor.bankDetails?.branch || ''
+      },
+      status: vendor.status || 'pending'
+    });
+    setShowEditForm(true);
+  };
+
+  // Function to handle edit form submission
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      startLoading();
+      const response = await api.put(`/vendors/${selectedVendor._id}`, formData);
+      
+      if (response.data?.success) {
+        toast.success('Vendor updated successfully');
+        setShowEditForm(false);
+        fetchVendors();
+      } else {
+        throw new Error(response.data?.error || 'Failed to update vendor');
+      }
+    } catch (error) {
+      console.error('Error updating vendor:', error);
+      toast.error(error.response?.data?.error || error.message || 'Error updating vendor');
+    } finally {
+      stopLoading();
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Vendors</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your vendor partnerships and product suppliers
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0">
-          <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-300">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Vendor
-          </button>
-        </div>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Vendors</h1>
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
+        >
+          Add New Vendor
+        </button>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white shadow-mobile rounded-lg p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="w-full sm:w-56">
-            <label htmlFor="status-select" className="block text-sm font-medium text-gray-700 mb-2">
-              Filter by Status
-            </label>
-            <div className="relative">
-              <select
-                id="status-select"
-                className="w-full border appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-gray-900 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="suspended">Suspended</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+      {/* Registration Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-overlay flex items-start justify-center overflow-y-auto">
+          <div className="fixed inset-0 bg-gray-900/50"></div>
+          <div className="relative w-full max-w-3xl my-8 mx-auto p-4">
+            <div className="bg-white rounded-lg shadow-xl relative">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-900">Register New Vendor</h2>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-            </div>
-          </div>
 
-          <div className="flex-1">
-            <label htmlFor="search-vendors" className="block text-sm font-medium text-gray-700 mb-2">
-              Search Vendors
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="search-vendors"
-                placeholder="Search by name, email or ID..."
-                className="w-full border rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-              />
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-8">
+                {/* Business Details Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Business Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Business Name"
+                      name="businessName"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      placeholder="Enter business name"
+                    />
+                    <FormField
+                      label="Owner Name"
+                      name="ownerName"
+                      value={formData.ownerName}
+                      onChange={handleChange}
+                      placeholder="Enter owner name"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Contact Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="business@example.com"
+                    />
+                    <FormField
+                      label="Phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+977 98XXXXXXXX"
+                    />
+                  </div>
+                </div>
+
+                {/* Address Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Address
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2">
+                      <FormField
+                        label="Street Address"
+                        name="address.street"
+                        value={formData.address.street}
+                        onChange={handleChange}
+                        placeholder="Enter street address"
+                      />
+                    </div>
+                    <FormField
+                      label="City"
+                      name="address.city"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      placeholder="Enter city"
+                    />
+                    <FormField
+                      label="State"
+                      name="address.state"
+                      value={formData.address.state}
+                      onChange={handleChange}
+                      placeholder="Enter state"
+                    />
+                    <FormField
+                      label="ZIP Code"
+                      name="address.zip"
+                      value={formData.address.zip}
+                      onChange={handleChange}
+                      placeholder="Enter ZIP code"
+                    />
+                  </div>
+                </div>
+
+                {/* Legal Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Legal Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Registration Number"
+                      name="registrationNumber"
+                      value={formData.registrationNumber}
+                      onChange={handleChange}
+                      placeholder="Enter registration number"
+                    />
+                    <FormField
+                      label="PAN Number"
+                      name="panNumber"
+                      value={formData.panNumber}
+                      onChange={handleChange}
+                      placeholder="Enter PAN number"
+                    />
+                  </div>
+                </div>
+
+                {/* Bank Details Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Bank Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Account Name"
+                      name="bankDetails.accountName"
+                      value={formData.bankDetails.accountName}
+                      onChange={handleChange}
+                      placeholder="Enter account name"
+                    />
+                    <FormField
+                      label="Account Number"
+                      name="bankDetails.accountNumber"
+                      value={formData.bankDetails.accountNumber}
+                      onChange={handleChange}
+                      placeholder="Enter account number"
+                    />
+                    <FormField
+                      label="Bank Name"
+                      name="bankDetails.bankName"
+                      value={formData.bankDetails.bankName}
+                      onChange={handleChange}
+                      placeholder="Enter bank name"
+                    />
+                    <FormField
+                      label="Branch"
+                      name="bankDetails.branch"
+                      value={formData.bankDetails.branch}
+                      onChange={handleChange}
+                      placeholder="Enter branch name"
+                    />
+                  </div>
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Vendor'
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Vendors Table */}
-      <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      {/* Edit Form Modal */}
+      {showEditForm && selectedVendor && (
+        <div className="fixed inset-0 z-overlay flex items-start justify-center overflow-y-auto">
+          <div className="fixed inset-0 bg-gray-900/50"></div>
+          <div className="relative w-full max-w-3xl my-8 mx-auto p-4">
+            <div className="bg-white rounded-lg shadow-xl relative">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-900">Edit Vendor Account</h2>
+                <button
+                  onClick={() => setShowEditForm(false)}
+                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit} className="p-6 space-y-8">
+                {/* Status Selection Section */}
+                <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">Account Status</h3>
+                    <p className="text-sm text-gray-500">Select the appropriate status for this vendor account</p>
+                  </div>
+                  <div className="relative">
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        status: e.target.value
+                      })}
+                      className={`rounded-md py-2 pl-3 pr-10 text-sm font-medium focus:outline-none focus:ring-2 border focus:ring-primary-500 focus:border-primary-500 ${
+                        formData.status === 'active' 
+                          ? 'bg-green-50 text-green-700' 
+                          : formData.status === 'pending' 
+                            ? 'bg-yellow-50 text-yellow-700' 
+                            : 'bg-red-50 text-red-700'
+                      }`}
+                    >
+                      <option value="pending" className="bg-white text-yellow-700">Pending</option>
+                      <option value="active" className="bg-white text-green-700">Active</option>
+                      <option value="suspended" className="bg-white text-red-700">Suspended</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Business Details Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Business Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Business Name"
+                      name="businessName"
+                      value={formData.businessName}
+                      onChange={handleChange}
+                      placeholder="Enter business name"
+                    />
+                    <FormField
+                      label="Owner Name"
+                      name="ownerName"
+                      value={formData.ownerName}
+                      onChange={handleChange}
+                      placeholder="Enter owner name"
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Contact Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="business@example.com"
+                    />
+                    <FormField
+                      label="Phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+977 98XXXXXXXX"
+                    />
+                  </div>
+                </div>
+
+                {/* Address Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Address
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="md:col-span-2">
+                      <FormField
+                        label="Street Address"
+                        name="address.street"
+                        value={formData.address.street}
+                        onChange={handleChange}
+                        placeholder="Enter street address"
+                      />
+                    </div>
+                    <FormField
+                      label="City"
+                      name="address.city"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      placeholder="Enter city"
+                    />
+                    <FormField
+                      label="State"
+                      name="address.state"
+                      value={formData.address.state}
+                      onChange={handleChange}
+                      placeholder="Enter state"
+                    />
+                    <FormField
+                      label="ZIP Code"
+                      name="address.zip"
+                      value={formData.address.zip}
+                      onChange={handleChange}
+                      placeholder="Enter ZIP code"
+                    />
+                  </div>
+                </div>
+
+                {/* Legal Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Legal Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Registration Number"
+                      name="registrationNumber"
+                      value={formData.registrationNumber}
+                      onChange={handleChange}
+                      placeholder="Enter registration number"
+                    />
+                    <FormField
+                      label="PAN Number"
+                      name="panNumber"
+                      value={formData.panNumber}
+                      onChange={handleChange}
+                      placeholder="Enter PAN number"
+                    />
+                  </div>
+                </div>
+
+                {/* Bank Details Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Bank Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      label="Account Name"
+                      name="bankDetails.accountName"
+                      value={formData.bankDetails.accountName}
+                      onChange={handleChange}
+                      placeholder="Enter account name"
+                    />
+                    <FormField
+                      label="Account Number"
+                      name="bankDetails.accountNumber"
+                      value={formData.bankDetails.accountNumber}
+                      onChange={handleChange}
+                      placeholder="Enter account number"
+                    />
+                    <FormField
+                      label="Bank Name"
+                      name="bankDetails.bankName"
+                      value={formData.bankDetails.bankName}
+                      onChange={handleChange}
+                      placeholder="Enter bank name"
+                    />
+                    <FormField
+                      label="Branch"
+                      name="bankDetails.branch"
+                      value={formData.bankDetails.branch}
+                      onChange={handleChange}
+                      placeholder="Enter branch name"
+                    />
+                  </div>
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditForm(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Vendor'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vendors List */}
+      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {isLoading ? (
+              // Skeleton loaders while data is being fetched
+              Array(5).fill(0).map((_, index) => (
+                <VendorSkeletonLoader key={index} />
+              ))
+            ) : vendors.length === 0 ? (
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Vendor
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Products
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Delivery
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                  No vendors found. Click "Add New Vendor" to create one.
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {vendors.map((vendor) => (
-                <tr key={vendor.id}>
+            ) : (
+              vendors.map((vendor) => (
+                <tr key={vendor._id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-primary-600 font-medium text-sm">
-                          {vendor.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
-                        <div className="text-sm text-gray-500">{vendor.address}</div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{vendor.businessName}</div>
+                        <div className="text-sm text-gray-500">{vendor.ownerName}</div>
                       </div>
                     </div>
                   </td>
@@ -154,64 +756,46 @@ const VendorsPage = () => {
                     <div className="text-sm text-gray-900">{vendor.email}</div>
                     <div className="text-sm text-gray-500">{vendor.phone}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {vendor.totalProducts}
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {new Date(vendor.lastDelivery).toLocaleDateString()}
-                    </div>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                      ${vendor.status === 'active' ? 'bg-green-100 text-green-800' : 
+                        vendor.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'}`}>
+                      {vendor.status}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(vendor.status)}`}>
-                      {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <span className={`${vendor.documentsVerified ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {vendor.documentsVerified ? 'Verified' : 'Pending Verification'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-primary-500 hover:text-primary-600 mr-4">Edit</button>
-                    <button className="text-secondary-500 hover:text-secondary-600">Delete</button>
+                    <button 
+                      className="text-primary-600 hover:text-primary-900 mr-3"
+                      onClick={() => handleLoginAsVendor(vendor)}
+                      disabled={loginAsVendorLoading}
+                    >
+                      {loginAsVendorLoading ? 'Accessing...' : 'Login as Vendor'}
+                    </button>
+                    <button 
+                      className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      onClick={() => openEditForm(vendor)}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="text-red-600 hover:text-red-900"
+                      onClick={() => handleStatusToggle(vendor._id, vendor.status)}
+                      disabled={statusUpdateLoading}
+                    >
+                      {statusUpdateLoading ? 'Updating...' : 'Toggle Status'}
+                    </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Pagination */}
-      <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg">
-        <div className="flex-1 flex justify-between sm:hidden">
-          <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-            Previous
-          </button>
-          <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-            Next
-          </button>
-        </div>
-        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
-              <span className="font-medium">20</span> results
-            </p>
-          </div>
-          <div>
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-              <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                Previous
-              </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                1
-              </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                2
-              </button>
-              <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                Next
-              </button>
-            </nav>
-          </div>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
