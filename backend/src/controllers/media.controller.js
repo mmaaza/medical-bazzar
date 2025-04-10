@@ -11,18 +11,29 @@ const RESIZE_PRESETS = {
   thumbnail: { width: 300, height: 300 }
 };
 
+// Ensure upload directory exists and has correct permissions
+const ensureUploadDirectory = () => {
+  const uploadDir = path.join(process.cwd(), '../public/uploads');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true, mode: 0o755 });
+  } else {
+    // Ensure correct permissions on existing directory
+    fs.chmodSync(uploadDir, 0o755);
+  }
+  return uploadDir;
+};
+
 // Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Use absolute path relative to project root
-    const uploadDir = path.join(process.cwd(), '../public/uploads');
-    console.log('Upload directory:', uploadDir); // Debug log
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+      const uploadDir = ensureUploadDirectory();
+      console.log('Upload directory:', uploadDir);
+      cb(null, uploadDir);
+    } catch (error) {
+      console.error('Error ensuring upload directory:', error);
+      cb(error);
     }
-    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Sanitize filename to prevent path traversal
