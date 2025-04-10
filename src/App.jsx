@@ -38,6 +38,8 @@ import ProductsPage from './pages/admin/ProductsPage';
 import CategoriesPage from './pages/admin/CategoriesPage';
 import BrandsPage from './pages/admin/BrandsPage';
 import VendorsPage from './pages/admin/VendorsPage';
+import VendorDetailsPage from './pages/admin/VendorDetailsPage';
+import VendorEditPage from './pages/admin/VendorEditPage';
 import { LoadingProvider } from './contexts/LoadingContext';
 import VendorPageErrorBoundary from './components/error/VendorPageErrorBoundary';
 
@@ -142,6 +144,22 @@ function App() {
               element={
                 <VendorPageErrorBoundary>
                   <VendorsPage />
+                </VendorPageErrorBoundary>
+              } 
+            />
+            <Route 
+              path="vendors/:vendorId" 
+              element={
+                <VendorPageErrorBoundary>
+                  <VendorDetailsPage />
+                </VendorPageErrorBoundary>
+              } 
+            />
+            <Route 
+              path="vendors/edit/:vendorId" 
+              element={
+                <VendorPageErrorBoundary>
+                  <VendorEditPage />
                 </VendorPageErrorBoundary>
               } 
             />

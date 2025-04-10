@@ -784,11 +784,10 @@ const VendorsPage = () => {
                       Edit
                     </button>
                     <button 
-                      className="text-red-600 hover:text-red-900"
-                      onClick={() => handleStatusToggle(vendor._id, vendor.status)}
-                      disabled={statusUpdateLoading}
+                      className="text-primary-600 hover:text-primary-700"
+                      onClick={() => navigate(`/admin/vendors/${vendor._id}`)}
                     >
-                      {statusUpdateLoading ? 'Updating...' : 'Toggle Status'}
+                      View
                     </button>
                   </td>
                 </tr>
