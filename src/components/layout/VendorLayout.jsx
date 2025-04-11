@@ -156,7 +156,7 @@ const VendorLayout = () => {
                 </button>
                 <div className="ml-4 lg:ml-0">
                   <h1 className="text-lg font-medium text-gray-900">
-                    {vendorData.businessName || 'Vendor Dashboard'}
+                    {vendorData.name || 'Vendor Dashboard'}
                   </h1>
                 </div>
               </div>
@@ -170,11 +170,11 @@ const VendorLayout = () => {
                   >
                     <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
                       <span className="text-sm font-medium text-primary-600">
-                        {vendorData.businessName?.charAt(0) || 'V'}
+                        {vendorData.name?.charAt(0) || 'V'}
                       </span>
                     </div>
                     <span className="hidden md:flex md:items-center">
-                      <span className="text-sm font-medium text-gray-900">{vendorData.businessName}</span>
+                      <span className="text-sm font-medium text-gray-900">{vendorData.name}</span>
                       <svg className="ml-2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>

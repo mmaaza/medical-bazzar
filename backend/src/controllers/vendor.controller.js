@@ -7,7 +7,7 @@ const { sendEmail } = require('../services/email.service');
 exports.createVendor = async (req, res) => {
   try {
     // Validate required fields
-    const requiredFields = ['businessName', 'ownerName', 'email', 'phone', 'registrationNumber', 'panNumber'];
+    const requiredFields = ['name', 'email', 'primaryPhone', 'city', 'companyRegistrationCertificate', 'vatNumber'];
     const missingFields = requiredFields.filter(field => !req.body[field]);
 
     if (missingFields.length > 0) {
@@ -26,7 +26,7 @@ exports.createVendor = async (req, res) => {
       createdBy: req.user.id
     });
 
-    // Send credentials email using the new sendEmail function
+    // Send credentials email
     await sendEmail({
       to: vendor.email,
       subject: 'Your Medical Bazzar Nepal Vendor Account',
@@ -116,11 +116,7 @@ exports.login = async (req, res) => {
     }
 
     // Create token
-    const token = jwt.sign(
-      { id: vendor._id, type: 'vendor' },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
-    );
+    const token = vendor.getSignedJwtToken();
 
     res.status(200).json({
       success: true,
@@ -265,7 +261,7 @@ exports.updateVendorById = async (req, res) => {
       performedBy: req.user._id,
       targetUser: vendor._id,
       targetModel: 'Vendor',
-      details: `Admin updated vendor: ${vendor.businessName}`,
+      details: `Admin updated vendor: ${vendor.name}`,
       ip: req.ip || 'unknown',
       userAgent: req.headers['user-agent'] || 'unknown'
     });
@@ -318,13 +314,12 @@ exports.adminLoginAsVendor = async (req, res) => {
     const token = vendor.getSignedJwtToken();
     
     // Log this action for audit purposes
-    // Use the authenticated admin user's ID from the request object
     await AuditLog.create({
       action: 'ADMIN_LOGIN_AS_VENDOR',
-      performedBy: req.user._id, // Use the admin's ID from the authentication middleware
+      performedBy: req.user._id,
       targetUser: vendor._id,
       targetModel: 'Vendor',
-      details: `Admin accessed vendor account: ${vendor.businessName}`,
+      details: `Admin accessed vendor account: ${vendor.name}`,
       ip: req.ip || 'unknown',
       userAgent: req.headers['user-agent'] || 'unknown'
     });
@@ -332,9 +327,9 @@ exports.adminLoginAsVendor = async (req, res) => {
     // Return token with vendor data (exclude password)
     const vendorData = {
       id: vendor._id,
-      businessName: vendor.businessName,
+      name: vendor.name,
       email: vendor.email,
-      phone: vendor.phone,
+      primaryPhone: vendor.primaryPhone,
       status: vendor.status,
       adminAccess: true // Flag to indicate this is admin login
     };

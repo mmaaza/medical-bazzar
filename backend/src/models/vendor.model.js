@@ -3,14 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const vendorSchema = new mongoose.Schema({
-  businessName: {
+  name: {
     type: String,
-    required: [true, 'Business name is required'],
-    trim: true,
-  },
-  ownerName: {
-    type: String,
-    required: [true, 'Owner name is required'],
+    required: [true, 'Vendor name is required'],
     trim: true,
   },
   email: {
@@ -26,46 +21,30 @@ const vendorSchema = new mongoose.Schema({
     minlength: [8, 'Password must be at least 8 characters'],
     select: false,
   },
-  phone: {
+  primaryPhone: {
     type: String,
-    required: [true, 'Phone number is required'],
+    required: [true, 'Primary phone number is required'],
   },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zip: String,
-  },
-  registrationNumber: {
+  secondaryPhone: {
     type: String,
-    required: [true, 'Business registration number is required'],
-    unique: true,
+    required: false,
   },
-  panNumber: {
+  city: {
     type: String,
-    required: [true, 'PAN number is required'],
-    unique: true,
+    required: [true, 'City is required'],
   },
-  documentsVerified: {
-    type: Boolean,
-    default: false,
+  companyRegistrationCertificate: {
+    type: String,
+    required: [true, 'Company registration certificate is required'],
+  },
+  vatNumber: {
+    type: String,
+    required: [true, 'VAT number is required'],
   },
   status: {
     type: String,
     enum: ['pending', 'active', 'suspended'],
     default: 'pending',
-  },
-  profileImage: String,
-  documents: {
-    registrationDoc: String,
-    panDoc: String,
-    otherDocs: [String],
-  },
-  bankDetails: {
-    accountName: String,
-    accountNumber: String,
-    bankName: String,
-    branch: String,
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

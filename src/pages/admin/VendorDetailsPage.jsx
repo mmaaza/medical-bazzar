@@ -221,7 +221,7 @@ const VendorDetailsPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">{vendor.businessName}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{vendor.name}</h1>
           </div>
           <p className="mt-1 text-sm text-gray-500">
             Viewing vendor details and products
@@ -280,86 +280,59 @@ const VendorDetailsPage = () => {
           <div className="px-6 py-5">
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
               <div>
-                <dt className="text-sm font-medium text-gray-500">Business Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.businessName}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Owner Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.ownerName}</dd>
+                <dt className="text-sm font-medium text-gray-500">Vendor Name</dt>
+                <dd className="mt-1 text-sm text-gray-900">{vendor.name}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Email</dt>
                 <dd className="mt-1 text-sm text-gray-900">{vendor.email}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.phone}</dd>
+                <dt className="text-sm font-medium text-gray-500">Primary Phone</dt>
+                <dd className="mt-1 text-sm text-gray-900">{vendor.primaryPhone}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Secondary Phone</dt>
+                <dd className="mt-1 text-sm text-gray-900">{vendor.secondaryPhone || 'Not provided'}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">City</dt>
+                <dd className="mt-1 text-sm text-gray-900">{vendor.city}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Status</dt>
                 <dd className="mt-1">{renderStatusBadge(vendor.status)}</dd>
               </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Documents</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {vendor.documentsVerified ? 
-                    <span className="text-green-600">Verified</span> : 
-                    <span className="text-yellow-600">Pending Verification</span>
-                  }
-                </dd>
-              </div>
             </dl>
           </div>
 
-          {/* Contact Information */}
-          <div className="px-6 py-5 border-t border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Contact Information</h3>
-          </div>
-          
-          <div className="px-6 py-5">
-            <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-              <div className="col-span-1 md:col-span-2">
-                <dt className="text-sm font-medium text-gray-500">Address</dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                  {vendor.address?.street && `${vendor.address.street}, `}
-                  {vendor.address?.city && `${vendor.address.city}, `}
-                  {vendor.address?.state && `${vendor.address.state} `}
-                  {vendor.address?.zip && vendor.address.zip}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Registration Number</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.registrationNumber || 'Not provided'}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">PAN Number</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.panNumber || 'Not provided'}</dd>
-              </div>
-            </dl>
-          </div>
-
-          {/* Bank Details */}
+          {/* Legal Information */}
           <div className="px-6 py-5 border-t border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Bank Information</h3>
+            <h3 className="text-lg font-medium text-gray-900">Legal Information</h3>
           </div>
           
           <div className="px-6 py-5">
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
               <div>
-                <dt className="text-sm font-medium text-gray-500">Account Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.bankDetails?.accountName || 'Not provided'}</dd>
+                <dt className="text-sm font-medium text-gray-500">Company Registration Certificate</dt>
+                {vendor.companyRegistrationCertificate ? (
+                  <dd className="mt-1 text-sm">
+                    <a 
+                      href={vendor.companyRegistrationCertificate} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-primary-500 hover:text-primary-700"
+                    >
+                      View Certificate
+                    </a>
+                  </dd>
+                ) : (
+                  <dd className="mt-1 text-sm text-gray-900">Not uploaded</dd>
+                )}
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Account Number</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.bankDetails?.accountNumber || 'Not provided'}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Bank Name</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.bankDetails?.bankName || 'Not provided'}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Branch</dt>
-                <dd className="mt-1 text-sm text-gray-900">{vendor.bankDetails?.branch || 'Not provided'}</dd>
+                <dt className="text-sm font-medium text-gray-500">VAT Number</dt>
+                <dd className="mt-1 text-sm text-gray-900">{vendor.vatNumber || 'Not provided'}</dd>
               </div>
             </dl>
           </div>

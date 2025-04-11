@@ -22,31 +22,48 @@ const FormField = ({ label, name, type = "text", value, onChange, placeholder, r
   </div>
 );
 
+const CityDropdown = ({ name, value, onChange, required = true }) => {
+  const cities = [
+    "Kathmandu", "Pokhara", "Lalitpur", "Bhaktapur", "Biratnagar", 
+    "Birgunj", "Dharan", "Itahari", "Janakpur", "Hetauda", 
+    "Nepalgunj", "Butwal", "Dhangadhi", "Bharatpur", "Tulsipur"
+  ];
+  
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        City
+      </label>
+      <select
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="block w-full rounded-lg border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6 transition duration-200 ease-in-out hover:border-gray-400"
+      >
+        <option value="">Select a city</option>
+        {cities.map(city => (
+          <option key={city} value={city}>{city}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
 const VendorEditPage = () => {
   const { vendorId } = useParams();
   const navigate = useNavigate();
   const { isLoading, startLoading, stopLoading } = useLoading();
   const [formData, setFormData] = useState({
-    businessName: '',
-    ownerName: '',
+    name: '',
     email: '',
-    phone: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      zip: ''
-    },
-    registrationNumber: '',
-    panNumber: '',
-    bankDetails: {
-      accountName: '',
-      accountNumber: '',
-      bankName: '',
-      branch: ''
-    },
-    status: 'pending',
-    documentsVerified: false
+    primaryPhone: '',
+    secondaryPhone: '',
+    city: '',
+    companyRegistrationCertificate: '',
+    vatNumber: '',
+    status: 'pending'
   });
 
   // Fetch vendor details
@@ -61,26 +78,14 @@ const VendorEditPage = () => {
         if (response.data?.success) {
           const vendor = response.data.data;
           setFormData({
-            businessName: vendor.businessName || '',
-            ownerName: vendor.ownerName || '',
+            name: vendor.name || '',
             email: vendor.email || '',
-            phone: vendor.phone || '',
-            address: {
-              street: vendor.address?.street || '',
-              city: vendor.address?.city || '',
-              state: vendor.address?.state || '',
-              zip: vendor.address?.zip || ''
-            },
-            registrationNumber: vendor.registrationNumber || '',
-            panNumber: vendor.panNumber || '',
-            bankDetails: {
-              accountName: vendor.bankDetails?.accountName || '',
-              accountNumber: vendor.bankDetails?.accountNumber || '',
-              bankName: vendor.bankDetails?.bankName || '',
-              branch: vendor.bankDetails?.branch || ''
-            },
-            status: vendor.status || 'pending',
-            documentsVerified: vendor.documentsVerified || false
+            primaryPhone: vendor.primaryPhone || '',
+            secondaryPhone: vendor.secondaryPhone || '',
+            city: vendor.city || '',
+            companyRegistrationCertificate: vendor.companyRegistrationCertificate || '',
+            vatNumber: vendor.vatNumber || '',
+            status: vendor.status || 'pending'
           });
         } else {
           toast.error('Failed to load vendor data');
@@ -100,25 +105,14 @@ const VendorEditPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Form validation
-    const requiredFields = ['businessName', 'ownerName', 'email', 'phone', 'registrationNumber', 'panNumber'];
+    const requiredFields = ['name', 'email', 'primaryPhone', 'city', 'companyRegistrationCertificate', 'vatNumber'];
     const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
@@ -231,23 +225,6 @@ const VendorEditPage = () => {
                 </select>
               </div>
             </div>
-            
-            <div className="mt-4 flex items-center">
-              <input
-                type="checkbox"
-                id="documentsVerified"
-                name="documentsVerified"
-                checked={formData.documentsVerified}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  documentsVerified: e.target.checked
-                })}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-              />
-              <label htmlFor="documentsVerified" className="ml-2 block text-sm text-gray-900">
-                Documents Verified
-              </label>
-            </div>
           </div>
         </div>
 
@@ -264,18 +241,19 @@ const VendorEditPage = () => {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
-                label="Business Name"
-                name="businessName"
-                value={formData.businessName}
+                label="Name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter business name"
+                placeholder="Enter vendor name"
               />
               <FormField
-                label="Owner Name"
-                name="ownerName"
-                value={formData.ownerName}
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter owner name"
+                placeholder="Enter email"
               />
             </div>
           </div>
@@ -294,26 +272,27 @@ const VendorEditPage = () => {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
+                label="Primary Phone"
+                name="primaryPhone"
+                type="tel"
+                value={formData.primaryPhone}
                 onChange={handleChange}
-                placeholder="business@example.com"
+                placeholder="Enter primary phone number"
               />
               <FormField
-                label="Phone"
-                name="phone"
+                label="Secondary Phone (Optional)"
+                name="secondaryPhone"
                 type="tel"
-                value={formData.phone}
+                value={formData.secondaryPhone}
                 onChange={handleChange}
-                placeholder="+977 98XXXXXXXX"
+                placeholder="Enter secondary phone number"
+                required={false}
               />
             </div>
           </div>
         </div>
 
-        {/* Address Section */}
+        {/* Location Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -321,40 +300,15 @@ const VendorEditPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              Address
+              Location
             </h3>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <FormField
-                  label="Street Address"
-                  name="address.street"
-                  value={formData.address.street}
-                  onChange={handleChange}
-                  placeholder="Enter street address"
-                />
-              </div>
-              <FormField
-                label="City"
-                name="address.city"
-                value={formData.address.city}
+              <CityDropdown
+                name="city"
+                value={formData.city}
                 onChange={handleChange}
-                placeholder="Enter city"
-              />
-              <FormField
-                label="State"
-                name="address.state"
-                value={formData.address.state}
-                onChange={handleChange}
-                placeholder="Enter state"
-              />
-              <FormField
-                label="ZIP Code"
-                name="address.zip"
-                value={formData.address.zip}
-                onChange={handleChange}
-                placeholder="Enter ZIP code"
               />
             </div>
           </div>
@@ -373,62 +327,18 @@ const VendorEditPage = () => {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
-                label="Registration Number"
-                name="registrationNumber"
-                value={formData.registrationNumber}
+                label="Company Registration Certificate"
+                name="companyRegistrationCertificate"
+                value={formData.companyRegistrationCertificate}
                 onChange={handleChange}
-                placeholder="Enter registration number"
+                placeholder="Enter company registration certificate"
               />
               <FormField
-                label="PAN Number"
-                name="panNumber"
-                value={formData.panNumber}
+                label="VAT Number"
+                name="vatNumber"
+                value={formData.vatNumber}
                 onChange={handleChange}
-                placeholder="Enter PAN number"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Bank Details Section */}
-        <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
-              Bank Details
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                label="Account Name"
-                name="bankDetails.accountName"
-                value={formData.bankDetails.accountName}
-                onChange={handleChange}
-                placeholder="Enter account name"
-              />
-              <FormField
-                label="Account Number"
-                name="bankDetails.accountNumber"
-                value={formData.bankDetails.accountNumber}
-                onChange={handleChange}
-                placeholder="Enter account number"
-              />
-              <FormField
-                label="Bank Name"
-                name="bankDetails.bankName"
-                value={formData.bankDetails.bankName}
-                onChange={handleChange}
-                placeholder="Enter bank name"
-              />
-              <FormField
-                label="Branch"
-                name="bankDetails.branch"
-                value={formData.bankDetails.branch}
-                onChange={handleChange}
-                placeholder="Enter branch name"
+                placeholder="Enter VAT number"
               />
             </div>
           </div>

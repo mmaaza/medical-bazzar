@@ -65,24 +65,13 @@ const VendorsPage = () => {
   const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
   const [loginAsVendorLoading, setLoginAsVendorLoading] = useState(false);
   const [formData, setFormData] = useState({
-    businessName: '',
-    ownerName: '',
+    name: '',
     email: '',
-    phone: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      zip: ''
-    },
-    registrationNumber: '',
-    panNumber: '',
-    bankDetails: {
-      accountName: '',
-      accountNumber: '',
-      bankName: '',
-      branch: ''
-    }
+    primaryPhone: '',
+    secondaryPhone: '',
+    city: '',
+    companyRegistrationCertificate: '',
+    vatNumber: ''
   });
 
   const fetchVendors = async () => {
@@ -114,19 +103,13 @@ const VendorsPage = () => {
         setShowForm(false);
         fetchVendors();
         setFormData({
-          businessName: '',
-          ownerName: '',
+          name: '',
           email: '',
-          phone: '',
-          address: { street: '', city: '', state: '', zip: '' },
-          registrationNumber: '',
-          panNumber: '',
-          bankDetails: {
-            accountName: '',
-            accountNumber: '',
-            bankName: '',
-            branch: ''
-          }
+          primaryPhone: '',
+          secondaryPhone: '',
+          city: '',
+          companyRegistrationCertificate: '',
+          vatNumber: ''
         });
       } else {
         throw new Error(response.data?.error || 'Failed to create vendor');
@@ -141,18 +124,7 @@ const VendorsPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLoginAsVendor = async (vendor) => {
@@ -199,25 +171,13 @@ const VendorsPage = () => {
   const openEditForm = (vendor) => {
     setSelectedVendor(vendor);
     setFormData({
-      businessName: vendor.businessName || '',
-      ownerName: vendor.ownerName || '',
+      name: vendor.name || '',
       email: vendor.email || '',
-      phone: vendor.phone || '',
-      address: {
-        street: vendor.address?.street || '',
-        city: vendor.address?.city || '',
-        state: vendor.address?.state || '',
-        zip: vendor.address?.zip || ''
-      },
-      registrationNumber: vendor.registrationNumber || '',
-      panNumber: vendor.panNumber || '',
-      bankDetails: {
-        accountName: vendor.bankDetails?.accountName || '',
-        accountNumber: vendor.bankDetails?.accountNumber || '',
-        bankName: vendor.bankDetails?.bankName || '',
-        branch: vendor.bankDetails?.branch || ''
-      },
-      status: vendor.status || 'pending'
+      primaryPhone: vendor.primaryPhone || '',
+      secondaryPhone: vendor.secondaryPhone || '',
+      city: vendor.city || '',
+      companyRegistrationCertificate: vendor.companyRegistrationCertificate || '',
+      vatNumber: vendor.vatNumber || ''
     });
     setShowEditForm(true);
   };
@@ -286,18 +246,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Business Name"
-                      name="businessName"
-                      value={formData.businessName}
+                      label="Name"
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
-                      placeholder="Enter business name"
+                      placeholder="Enter name"
                     />
                     <FormField
-                      label="Owner Name"
-                      name="ownerName"
-                      value={formData.ownerName}
+                      label="Email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleChange}
-                      placeholder="Enter owner name"
+                      placeholder="Enter email"
                     />
                   </div>
                 </div>
@@ -312,20 +272,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      label="Primary Phone"
+                      name="primaryPhone"
+                      value={formData.primaryPhone}
                       onChange={handleChange}
-                      placeholder="business@example.com"
+                      placeholder="Enter primary phone"
                     />
                     <FormField
-                      label="Phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
+                      label="Secondary Phone"
+                      name="secondaryPhone"
+                      value={formData.secondaryPhone}
                       onChange={handleChange}
-                      placeholder="+977 98XXXXXXXX"
+                      placeholder="Enter secondary phone"
                     />
                   </div>
                 </div>
@@ -340,35 +298,12 @@ const VendorsPage = () => {
                     Address
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                      <FormField
-                        label="Street Address"
-                        name="address.street"
-                        value={formData.address.street}
-                        onChange={handleChange}
-                        placeholder="Enter street address"
-                      />
-                    </div>
                     <FormField
                       label="City"
-                      name="address.city"
-                      value={formData.address.city}
+                      name="city"
+                      value={formData.city}
                       onChange={handleChange}
                       placeholder="Enter city"
-                    />
-                    <FormField
-                      label="State"
-                      name="address.state"
-                      value={formData.address.state}
-                      onChange={handleChange}
-                      placeholder="Enter state"
-                    />
-                    <FormField
-                      label="ZIP Code"
-                      name="address.zip"
-                      value={formData.address.zip}
-                      onChange={handleChange}
-                      placeholder="Enter ZIP code"
                     />
                   </div>
                 </div>
@@ -383,58 +318,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Registration Number"
-                      name="registrationNumber"
-                      value={formData.registrationNumber}
+                      label="Company Registration Certificate"
+                      name="companyRegistrationCertificate"
+                      value={formData.companyRegistrationCertificate}
                       onChange={handleChange}
-                      placeholder="Enter registration number"
+                      placeholder="Enter company registration certificate"
                     />
                     <FormField
-                      label="PAN Number"
-                      name="panNumber"
-                      value={formData.panNumber}
+                      label="VAT Number"
+                      name="vatNumber"
+                      value={formData.vatNumber}
                       onChange={handleChange}
-                      placeholder="Enter PAN number"
-                    />
-                  </div>
-                </div>
-
-                {/* Bank Details Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Bank Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Account Name"
-                      name="bankDetails.accountName"
-                      value={formData.bankDetails.accountName}
-                      onChange={handleChange}
-                      placeholder="Enter account name"
-                    />
-                    <FormField
-                      label="Account Number"
-                      name="bankDetails.accountNumber"
-                      value={formData.bankDetails.accountNumber}
-                      onChange={handleChange}
-                      placeholder="Enter account number"
-                    />
-                    <FormField
-                      label="Bank Name"
-                      name="bankDetails.bankName"
-                      value={formData.bankDetails.bankName}
-                      onChange={handleChange}
-                      placeholder="Enter bank name"
-                    />
-                    <FormField
-                      label="Branch"
-                      name="bankDetails.branch"
-                      value={formData.bankDetails.branch}
-                      onChange={handleChange}
-                      placeholder="Enter branch name"
+                      placeholder="Enter VAT number"
                     />
                   </div>
                 </div>
@@ -531,18 +426,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Business Name"
-                      name="businessName"
-                      value={formData.businessName}
+                      label="Name"
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
-                      placeholder="Enter business name"
+                      placeholder="Enter name"
                     />
                     <FormField
-                      label="Owner Name"
-                      name="ownerName"
-                      value={formData.ownerName}
+                      label="Email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleChange}
-                      placeholder="Enter owner name"
+                      placeholder="Enter email"
                     />
                   </div>
                 </div>
@@ -557,20 +452,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
+                      label="Primary Phone"
+                      name="primaryPhone"
+                      value={formData.primaryPhone}
                       onChange={handleChange}
-                      placeholder="business@example.com"
+                      placeholder="Enter primary phone"
                     />
                     <FormField
-                      label="Phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
+                      label="Secondary Phone"
+                      name="secondaryPhone"
+                      value={formData.secondaryPhone}
                       onChange={handleChange}
-                      placeholder="+977 98XXXXXXXX"
+                      placeholder="Enter secondary phone"
                     />
                   </div>
                 </div>
@@ -585,35 +478,12 @@ const VendorsPage = () => {
                     Address
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="md:col-span-2">
-                      <FormField
-                        label="Street Address"
-                        name="address.street"
-                        value={formData.address.street}
-                        onChange={handleChange}
-                        placeholder="Enter street address"
-                      />
-                    </div>
                     <FormField
                       label="City"
-                      name="address.city"
-                      value={formData.address.city}
+                      name="city"
+                      value={formData.city}
                       onChange={handleChange}
                       placeholder="Enter city"
-                    />
-                    <FormField
-                      label="State"
-                      name="address.state"
-                      value={formData.address.state}
-                      onChange={handleChange}
-                      placeholder="Enter state"
-                    />
-                    <FormField
-                      label="ZIP Code"
-                      name="address.zip"
-                      value={formData.address.zip}
-                      onChange={handleChange}
-                      placeholder="Enter ZIP code"
                     />
                   </div>
                 </div>
@@ -628,58 +498,18 @@ const VendorsPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
-                      label="Registration Number"
-                      name="registrationNumber"
-                      value={formData.registrationNumber}
+                      label="Company Registration Certificate"
+                      name="companyRegistrationCertificate"
+                      value={formData.companyRegistrationCertificate}
                       onChange={handleChange}
-                      placeholder="Enter registration number"
+                      placeholder="Enter company registration certificate"
                     />
                     <FormField
-                      label="PAN Number"
-                      name="panNumber"
-                      value={formData.panNumber}
+                      label="VAT Number"
+                      name="vatNumber"
+                      value={formData.vatNumber}
                       onChange={handleChange}
-                      placeholder="Enter PAN number"
-                    />
-                  </div>
-                </div>
-
-                {/* Bank Details Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Bank Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Account Name"
-                      name="bankDetails.accountName"
-                      value={formData.bankDetails.accountName}
-                      onChange={handleChange}
-                      placeholder="Enter account name"
-                    />
-                    <FormField
-                      label="Account Number"
-                      name="bankDetails.accountNumber"
-                      value={formData.bankDetails.accountNumber}
-                      onChange={handleChange}
-                      placeholder="Enter account number"
-                    />
-                    <FormField
-                      label="Bank Name"
-                      name="bankDetails.bankName"
-                      value={formData.bankDetails.bankName}
-                      onChange={handleChange}
-                      placeholder="Enter bank name"
-                    />
-                    <FormField
-                      label="Branch"
-                      name="bankDetails.branch"
-                      value={formData.bankDetails.branch}
-                      onChange={handleChange}
-                      placeholder="Enter branch name"
+                      placeholder="Enter VAT number"
                     />
                   </div>
                 </div>
@@ -747,14 +577,14 @@ const VendorsPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{vendor.businessName}</div>
-                        <div className="text-sm text-gray-500">{vendor.ownerName}</div>
+                        <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
+                        <div className="text-sm text-gray-500">{vendor.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{vendor.email}</div>
-                    <div className="text-sm text-gray-500">{vendor.phone}</div>
+                    <div className="text-sm text-gray-900">{vendor.primaryPhone}</div>
+                    <div className="text-sm text-gray-500">{vendor.secondaryPhone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -765,8 +595,8 @@ const VendorsPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`${vendor.documentsVerified ? 'text-green-600' : 'text-yellow-600'}`}>
-                      {vendor.documentsVerified ? 'Verified' : 'Pending Verification'}
+                    <span className={`${vendor.companyRegistrationCertificate ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {vendor.companyRegistrationCertificate ? 'Uploaded' : 'Pending Upload'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
