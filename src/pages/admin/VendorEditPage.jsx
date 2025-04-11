@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
@@ -21,6 +21,81 @@ const FormField = ({ label, name, type = "text", value, onChange, placeholder, r
     />
   </div>
 );
+
+const FileUploadField = ({ label, name, value, onChange, accept = ".pdf,.doc,.docx,image/*", required = true }) => {
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState('');
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof value === 'string' && value) {
+      setPreviewUrl(value);
+      setFileName(value.split('/').pop());
+    }
+  }, [value]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      onChange({ target: { name, value: file } });
+
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+        return () => URL.revokeObjectURL(url);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          >
+            Choose File
+          </button>
+          <span className="text-sm text-gray-500">{fileName || 'No file chosen'}</span>
+          <input
+            type="file"
+            ref={fileInputRef}
+            id={name}
+            name={name}
+            onChange={handleFileChange}
+            accept={accept}
+            required={required && !previewUrl}
+            className="hidden"
+          />
+        </div>
+        {previewUrl && (
+          <div className="relative">
+            {previewUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+              <img 
+                src={previewUrl} 
+                alt="Preview" 
+                className="h-32 w-auto object-cover rounded-lg"
+              />
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Current file: {fileName}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const CityDropdown = ({ name, value, onChange, required = true }) => {
   const cities = [
@@ -65,15 +140,14 @@ const VendorEditPage = () => {
     vatNumber: '',
     status: 'pending'
   });
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Fetch vendor details
   useEffect(() => {
     const fetchVendorData = async () => {
       if (!vendorId) return;
 
       try {
         startLoading();
-        // Fetch vendor details
         const response = await api.get(`/vendors/${vendorId}`);
         if (response.data?.success) {
           const vendor = response.data.data;
@@ -111,18 +185,49 @@ const VendorEditPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Form validation
-    const requiredFields = ['name', 'email', 'primaryPhone', 'city', 'companyRegistrationCertificate', 'vatNumber'];
-    const missingFields = requiredFields.filter(field => !formData[field]);
-    
-    if (missingFields.length > 0) {
-      toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-    
     try {
       startLoading();
-      const response = await api.put(`/vendors/${vendorId}`, formData);
+      const formDataToSend = new FormData();
+      
+      if (formData.companyRegistrationCertificate instanceof File) {
+        const fileFormData = new FormData();
+        fileFormData.append('files', formData.companyRegistrationCertificate);
+        
+        const mediaResponse = await api.post('/media/upload', fileFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          },
+        });
+
+        if (mediaResponse.data?.data?.[0]?.url) {
+          if (formData.companyRegistrationCertificate && typeof formData.companyRegistrationCertificate === 'string') {
+            const oldMediaId = formData.companyRegistrationCertificate.split('/').pop().split('_')[0];
+            if (oldMediaId) {
+              try {
+                await api.delete(`/media/${oldMediaId}`);
+              } catch (error) {
+                console.error('Error deleting old file:', error);
+              }
+            }
+          }
+
+          formDataToSend.set('companyRegistrationCertificate', mediaResponse.data.data[0].url);
+        }
+      } else {
+        formDataToSend.set('companyRegistrationCertificate', formData.companyRegistrationCertificate || '');
+      }
+
+      Object.keys(formData).forEach(key => {
+        if (key !== 'companyRegistrationCertificate') {
+          formDataToSend.set(key, formData[key]);
+        }
+      });
+
+      const response = await api.put(`/vendors/${vendorId}`, Object.fromEntries(formDataToSend));
       
       if (response.data?.success) {
         toast.success('Vendor updated successfully');
@@ -135,13 +240,13 @@ const VendorEditPage = () => {
       toast.error(error.response?.data?.error || error.message || 'Error updating vendor');
     } finally {
       stopLoading();
+      setUploadProgress(0);
     }
   };
 
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
-        {/* Skeleton for Page Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
           <div>
             <div className="flex items-center">
@@ -152,7 +257,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Skeleton for form sections */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="h-6 w-40 bg-gray-200 rounded"></div>
@@ -174,7 +278,6 @@ const VendorEditPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
         <div>
           <div className="flex items-center">
@@ -195,7 +298,6 @@ const VendorEditPage = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Status Selection Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="bg-gray-50 p-6 rounded-t-lg">
             <div className="flex items-center justify-between">
@@ -228,7 +330,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Business Details Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -259,7 +360,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Contact Information Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -292,7 +392,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Location Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -314,7 +413,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Legal Information Section */}
         <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -326,13 +424,24 @@ const VendorEditPage = () => {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
+              <FileUploadField
                 label="Company Registration Certificate"
                 name="companyRegistrationCertificate"
                 value={formData.companyRegistrationCertificate}
                 onChange={handleChange}
-                placeholder="Enter company registration certificate"
+                accept=".pdf,.doc,.docx,image/*"
               />
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="mt-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                      className="bg-primary-500 h-2.5 rounded-full transition-all duration-300" 
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">Uploading: {uploadProgress}%</p>
+                </div>
+              )}
               <FormField
                 label="VAT Number"
                 name="vatNumber"
@@ -344,7 +453,6 @@ const VendorEditPage = () => {
           </div>
         </div>
 
-        {/* Form Actions */}
         <div className="flex justify-end space-x-3 pt-6">
           <button
             type="button"

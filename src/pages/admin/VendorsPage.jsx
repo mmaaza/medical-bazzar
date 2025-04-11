@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,47 @@ const FormField = ({ label, name, type = "text", value, onChange, placeholder, r
     />
   </div>
 );
+
+const FileUploadField = ({ label, name, value, onChange, accept = ".pdf,.doc,.docx,image/*", required = true }) => {
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      onChange({ target: { name, value: file } });
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+        >
+          Choose File
+        </button>
+        <span className="text-sm text-gray-500">{fileName || 'No file chosen'}</span>
+        <input
+          type="file"
+          ref={fileInputRef}
+          id={name}
+          name={name}
+          onChange={handleFileChange}
+          accept={accept}
+          required={required}
+          className="hidden"
+        />
+      </div>
+    </div>
+  );
+};
 
 // Skeleton loader component for vendors table
 const VendorSkeletonLoader = () => (
@@ -64,6 +105,7 @@ const VendorsPage = () => {
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
   const [loginAsVendorLoading, setLoginAsVendorLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -96,7 +138,37 @@ const VendorsPage = () => {
     e.preventDefault();
     try {
       startLoading();
-      const response = await api.post('/vendors', formData);
+      const formDataToSend = new FormData();
+      
+      // Append all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'companyRegistrationCertificate' || !formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+      
+      // Append file if exists
+      if (formData.companyRegistrationCertificate instanceof File) {
+        formDataToSend.append('files', formData.companyRegistrationCertificate);
+        
+        // Upload file first
+        const mediaResponse = await api.post('/media/upload', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          },
+        });
+
+        // Get the uploaded file URL
+        if (mediaResponse.data?.data?.[0]?.url) {
+          formDataToSend.set('companyRegistrationCertificate', mediaResponse.data.data[0].url);
+        }
+      }
+
+      const response = await api.post('/vendors', Object.fromEntries(formDataToSend));
       
       if (response.data?.success) {
         toast.success('Vendor created successfully');
@@ -119,6 +191,7 @@ const VendorsPage = () => {
       toast.error(error.response?.data?.error || error.message || 'Error creating vendor');
     } finally {
       stopLoading();
+      setUploadProgress(0);
     }
   };
 
@@ -187,7 +260,53 @@ const VendorsPage = () => {
     e.preventDefault();
     try {
       startLoading();
-      const response = await api.put(`/vendors/${selectedVendor._id}`, formData);
+      const formDataToSend = new FormData();
+      
+      // Handle file upload first if there's a new file
+      if (formData.companyRegistrationCertificate instanceof File) {
+        const fileFormData = new FormData();
+        fileFormData.append('files', formData.companyRegistrationCertificate);
+        
+        // Upload file
+        const mediaResponse = await api.post('/media/upload', fileFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          },
+        });
+
+        if (mediaResponse.data?.data?.[0]?.url) {
+          // Delete old file if it exists
+          if (formData.companyRegistrationCertificate && typeof formData.companyRegistrationCertificate === 'string') {
+            const oldMediaId = formData.companyRegistrationCertificate.split('/').pop().split('_')[0];
+            if (oldMediaId) {
+              try {
+                await api.delete(`/media/${oldMediaId}`);
+              } catch (error) {
+                console.error('Error deleting old file:', error);
+              }
+            }
+          }
+
+          // Use the new file URL
+          formDataToSend.set('companyRegistrationCertificate', mediaResponse.data.data[0].url);
+        }
+      } else {
+        // Keep existing file URL
+        formDataToSend.set('companyRegistrationCertificate', formData.companyRegistrationCertificate || '');
+      }
+
+      // Append all other fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'companyRegistrationCertificate') {
+          formDataToSend.set(key, formData[key]);
+        }
+      });
+
+      const response = await api.put(`/vendors/${selectedVendor._id}`, Object.fromEntries(formDataToSend));
       
       if (response.data?.success) {
         toast.success('Vendor updated successfully');
@@ -201,6 +320,7 @@ const VendorsPage = () => {
       toast.error(error.response?.data?.error || error.message || 'Error updating vendor');
     } finally {
       stopLoading();
+      setUploadProgress(0);
     }
   };
 
@@ -317,12 +437,11 @@ const VendorsPage = () => {
                     Legal Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
+                    <FileUploadField
                       label="Company Registration Certificate"
                       name="companyRegistrationCertificate"
-                      value={formData.companyRegistrationCertificate}
                       onChange={handleChange}
-                      placeholder="Enter company registration certificate"
+                      accept=".pdf,.doc,.docx,image/*"
                     />
                     <FormField
                       label="VAT Number"
@@ -332,6 +451,17 @@ const VendorsPage = () => {
                       placeholder="Enter VAT number"
                     />
                   </div>
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-primary-500 h-2.5 rounded-full transition-all duration-300" 
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-500 mt-1">Uploading: {uploadProgress}%</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Form Actions */}
@@ -497,13 +627,24 @@ const VendorsPage = () => {
                     Legal Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
+                    <FileUploadField
                       label="Company Registration Certificate"
                       name="companyRegistrationCertificate"
                       value={formData.companyRegistrationCertificate}
                       onChange={handleChange}
-                      placeholder="Enter company registration certificate"
+                      accept=".pdf,.doc,.docx,image/*"
                     />
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                      <div className="mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className="bg-primary-500 h-2.5 rounded-full transition-all duration-300" 
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Uploading: {uploadProgress}%</p>
+                      </div>
+                    )}
                     <FormField
                       label="VAT Number"
                       name="vatNumber"
