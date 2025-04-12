@@ -334,6 +334,46 @@ const VendorDetailsPage = () => {
                 <dt className="text-sm font-medium text-gray-500">VAT Number</dt>
                 <dd className="mt-1 text-sm text-gray-900">{vendor.vatNumber || 'Not provided'}</dd>
               </div>
+              <div className="col-span-2">
+                <dt className="text-sm font-medium text-gray-500 mb-2">Account Access</dt>
+                <dd>
+                  <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Allow Vendor Login</p>
+                      <p className="text-sm text-gray-500">When disabled, the vendor cannot log in to their account</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          startLoading();
+                          const response = await api.put(`/vendors/${vendorId}`, { 
+                            isLoginAllowed: !vendor.isLoginAllowed 
+                          });
+                          if (response.data?.success) {
+                            setVendor({...vendor, isLoginAllowed: !vendor.isLoginAllowed});
+                            toast.success(`Vendor login ${!vendor.isLoginAllowed ? 'enabled' : 'disabled'} successfully`);
+                          }
+                        } catch (error) {
+                          toast.error(error.response?.data?.error || 'Failed to update vendor access');
+                        } finally {
+                          stopLoading();
+                        }
+                      }}
+                      disabled={isLoading}
+                      className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ${
+                        vendor.isLoginAllowed ? 'bg-primary-500' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span className="sr-only">Allow vendor login</span>
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${
+                          vendor.isLoginAllowed ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </dd>
+              </div>
             </dl>
           </div>
         </div>

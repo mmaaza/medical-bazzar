@@ -107,21 +107,29 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check if vendor is active
-    if (vendor.status !== 'active') {
+    // Check if vendor login is allowed (only for regular vendor login, not admin login)
+    if (!req.user?.role === 'admin' && !vendor.isLoginAllowed) {
       return res.status(401).json({
         success: false,
-        error: 'Your account is not active. Please contact support.'
+        error: 'Your login access has been disabled. Please contact support.'
       });
     }
 
     // Create token
     const token = vendor.getSignedJwtToken();
 
+    // Return response with isLoginAllowed status
     res.status(200).json({
       success: true,
       token,
-      data: vendor
+      data: {
+        id: vendor._id,
+        name: vendor.name,
+        email: vendor.email,
+        primaryPhone: vendor.primaryPhone,
+        status: vendor.status,
+        isLoginAllowed: vendor.isLoginAllowed
+      }
     });
   } catch (error) {
     res.status(400).json({
@@ -331,6 +339,7 @@ exports.adminLoginAsVendor = async (req, res) => {
       email: vendor.email,
       primaryPhone: vendor.primaryPhone,
       status: vendor.status,
+      isLoginAllowed: vendor.isLoginAllowed,
       adminAccess: true // Flag to indicate this is admin login
     };
     

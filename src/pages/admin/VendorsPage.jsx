@@ -250,7 +250,8 @@ const VendorsPage = () => {
       secondaryPhone: vendor.secondaryPhone || '',
       city: vendor.city || '',
       companyRegistrationCertificate: vendor.companyRegistrationCertificate || '',
-      vatNumber: vendor.vatNumber || ''
+      vatNumber: vendor.vatNumber || '',
+      status: vendor.status || 'pending' // Add status initialization
     });
     setShowEditForm(true);
   };
@@ -291,7 +292,6 @@ const VendorsPage = () => {
             }
           }
 
-          // Use the new file URL
           formDataToSend.set('companyRegistrationCertificate', mediaResponse.data.data[0].url);
         }
       } else {
@@ -299,14 +299,19 @@ const VendorsPage = () => {
         formDataToSend.set('companyRegistrationCertificate', formData.companyRegistrationCertificate || '');
       }
 
-      // Append all other fields
-      Object.keys(formData).forEach(key => {
-        if (key !== 'companyRegistrationCertificate') {
-          formDataToSend.set(key, formData[key]);
-        }
-      });
+      // Create update data object
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        primaryPhone: formData.primaryPhone,
+        secondaryPhone: formData.secondaryPhone,
+        city: formData.city,
+        vatNumber: formData.vatNumber,
+        status: formData.status, // Include status in update
+        companyRegistrationCertificate: formDataToSend.get('companyRegistrationCertificate')
+      };
 
-      const response = await api.put(`/vendors/${selectedVendor._id}`, Object.fromEntries(formDataToSend));
+      const response = await api.put(`/vendors/${selectedVendor._id}`, updateData);
       
       if (response.data?.success) {
         toast.success('Vendor updated successfully');

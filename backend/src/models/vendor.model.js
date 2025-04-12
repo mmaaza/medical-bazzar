@@ -46,6 +46,10 @@ const vendorSchema = new mongoose.Schema({
     enum: ['pending', 'active', 'suspended'],
     default: 'pending',
   },
+  isLoginAllowed: {
+    type: Boolean,
+    default: true
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -11,9 +11,9 @@ const VendorRoute = ({ children }) => {
     return <Navigate to="/vendor/login" state={{ from: location }} replace />;
   }
 
-  // Check if vendor is active
-  if (vendorData.status !== 'active') {
-    return <Navigate to="/vendor/login" state={{ error: 'Your account is not active. Please contact support.' }} replace />;
+  // Check if vendor login is allowed
+  if (!vendorData.isLoginAllowed && !vendorData.adminAccess) {
+    return <Navigate to="/vendor/login" state={{ error: 'Your login access has been disabled. Please contact support.' }} replace />;
   }
 
   return children;
