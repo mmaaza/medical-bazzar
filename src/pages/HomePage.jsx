@@ -41,6 +41,16 @@ const HomePage = () => {
     { id: 11, name: 'Diabetic Testing Kit', price: 199.99, salePrice: 149.99, image: 'https://placehold.co/300x300?text=Testing+Kit', timeLeft: '8h 45m' },
   ];
 
+  // Medical categories with small cards
+  const categories = [
+    { id: 1, name: 'Medical Devices', image: 'https://placehold.co/200x200?text=Medical+Devices', count: 42 },
+    { id: 2, name: 'First Aid', image: 'https://placehold.co/200x200?text=First+Aid', count: 38 },
+    { id: 3, name: 'Personal Care', image: 'https://placehold.co/200x200?text=Personal+Care', count: 56 },
+    { id: 4, name: 'Diagnostics', image: 'https://placehold.co/200x200?text=Diagnostics', count: 29 },
+    { id: 5, name: 'Hospital Supplies', image: 'https://placehold.co/200x200?text=Hospital+Supplies', count: 45 },
+    { id: 6, name: 'Mobility Aids', image: 'https://placehold.co/200x200?text=Mobility+Aids', count: 33 }
+  ];
+
   // Flash Deal Card Component
   const FlashDealCard = ({ deal }) => (
     <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border border-accent-200">
@@ -73,99 +83,38 @@ const HomePage = () => {
       <div className="-mt-0 -pt-0">
         <Hero />
       </div>
-      
-      {/* Features Section */}
-      <section className="py-6 md:py-12">
-        <div className="container mx-auto px-3 md:px-4">
-          {/* Use Swiper on mobile, grid on larger screens */}
-          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
-            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
-              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Fast Delivery</h3>
-                <p className="text-xs md:text-sm text-gray-600">On all orders over $50</p>
-              </div>
-            </div>
-            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
-              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">24/7 Support</h3>
-                <p className="text-xs md:text-sm text-gray-600">Healthcare professionals available</p>
-              </div>
-            </div>
-            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg shadow-md">
-              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
-                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Quality Guarantee</h3>
-                <p className="text-xs md:text-sm text-gray-600">FDA approved products</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Mobile Swiper */}
-          <div className="sm:hidden">
-            <Swiper
-              modules={[Autoplay]}
-              spaceBetween={16}
-              slidesPerView={1}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              loop={true}
-            >
-              <SwiperSlide>
-                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
-                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                    </svg>
+      {/* Categories Section */}
+      <section className="py-8 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                className="group"
+              >
+                <div className="bg-white rounded-lg overflow-hidden shadow-mobile hover:shadow-mobile-lg transition-shadow duration-300 border border-gray-100">
+                  <div className="relative aspect-square">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-0.5">Fast Delivery</h3>
-                    <p className="text-xs text-gray-600">On all orders over $50</p>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
-                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-0.5">24/7 Support</h3>
-                    <p className="text-xs text-gray-600">Healthcare professionals available</p>
+                  <div className="p-3">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">{category.name}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{category.count} items</p>
                   </div>
                 </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
-                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-0.5">Quality Guarantee</h3>
-                    <p className="text-xs text-gray-600">FDA approved products</p>
-                  </div>
-                </div>
-              </SwiperSlide>
-            </Swiper>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
+
+      
 
       {/* Flash Deals Section */}
       <section className="py-8 md:py-12 bg-gradient-to-br from-accent-50 to-primary-50">
@@ -250,6 +199,99 @@ const HomePage = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-6 md:py-12">
+        <div className="container mx-auto px-3 md:px-4">
+          {/* Use Swiper on mobile, grid on larger screens */}
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg border">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Fast Delivery</h3>
+                <p className="text-xs md:text-sm text-gray-600">On all orders over $50</p>
+              </div>
+            </div>
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg border">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">24/7 Support</h3>
+                <p className="text-xs md:text-sm text-gray-600">Healthcare professionals available</p>
+              </div>
+            </div>
+            <div className="flex items-center bg-white p-3 md:p-6 rounded-lg border">
+              <div className="mr-3 md:mr-4 bg-primary-100 p-2 md:p-3 rounded-full">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1">Quality Guarantee</h3>
+                <p className="text-xs md:text-sm text-gray-600">FDA approved products</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Swiper */}
+          <div className="sm:hidden">
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={16}
+              slidesPerView={1}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              loop={true}
+            >
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">Fast Delivery</h3>
+                    <p className="text-xs text-gray-600">On all orders over $50</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">24/7 Support</h3>
+                    <p className="text-xs text-gray-600">Healthcare professionals available</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className="flex items-center bg-white p-3 rounded-lg shadow-md">
+                  <div className="mr-3 bg-primary-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm mb-0.5">Quality Guarantee</h3>
+                    <p className="text-xs text-gray-600">FDA approved products</p>
+                  </div>
+                </div>
+              </SwiperSlide>
+            </Swiper>
+          </div>
         </div>
       </section>
 
