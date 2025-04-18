@@ -30,6 +30,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/users.routes'));
 app.use('/api/media', require('./routes/media.routes'));
 app.use('/api/vendors', require('./routes/vendor.routes'));
+app.use('/api/categories', require('./routes/category.routes'));
 
 // Error handler
 app.use(errorHandler);
