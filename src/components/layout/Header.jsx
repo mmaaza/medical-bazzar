@@ -1,15 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import api from "../../services/api";
+
+// Add this helper function at the top of the component
+const renderCategoryWithIndentation = (category, level = 0) => {
+  return (
+    <React.Fragment key={category._id}>
+      <Link
+        to={`/category/${category.slug}`}
+        className={`block px-4 py-2 hover:bg-primary-100 text-sm ${level > 0 ? `pl-${4 + level * 4}` : ''}`}
+      >
+        {level > 0 && '└─ '}{category.name}
+      </Link>
+      {category.children?.map(child => renderCategoryWithIndentation(child, level + 1))}
+    </React.Fragment>
+  );
+};
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isAccountRoute = location.pathname.startsWith("/account");
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('/categories', {
+          params: { status: 'active' }
+        });
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+        setSelectedCategories([]);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -43,6 +92,65 @@ const Header = () => {
       // Save the intended destination
       navigate("/login", { state: { from: { pathname: "/wishlist" } } });
     }
+  };
+
+  const handleCategoryClick = (category, level, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Update selected categories array up to the current level and add new selection
+    setSelectedCategories(prev => {
+      const newSelected = [...prev.slice(0, level), category];
+      return newSelected;
+    });
+
+    // Only navigate if it's a leaf category (no children)
+    if (!category.children?.length) {
+      setIsDropdownOpen(false);
+      setSelectedCategories([]);
+      navigate(`/category/${category.slug}`);
+    }
+  };
+
+  const handleCategoryNavigation = (e, category) => {
+    e.stopPropagation(); // Prevent the click from triggering handleCategoryClick
+    if (!category.children?.length) {
+      setIsDropdownOpen(false);
+      setSelectedCategories([]);
+      navigate(`/category/${category.slug}`);
+    }
+  };
+
+  const getCategoriesForLevel = (level) => {
+    if (level === 0) {
+      return categories;
+    }
+    
+    const parentCategory = selectedCategories[level - 1];
+    return parentCategory?.children || [];
+  };
+
+  const getMaxLevel = () => {
+    const findMaxLevel = (categories, level = 0) => {
+      if (!categories || categories.length === 0) return level;
+      
+      let maxLevel = level;
+      categories.forEach(category => {
+        if (category.children?.length > 0) {
+          const childLevel = findMaxLevel(category.children, level + 1);
+          maxLevel = Math.max(maxLevel, childLevel);
+        }
+      });
+      return maxLevel;
+    };
+
+    return findMaxLevel(categories);
+  };
+
+  // Return array of numbers from 0 to max level found in categories
+  const getLevels = () => {
+    const maxLevel = getMaxLevel();
+    return Array.from({ length: maxLevel + 1 }, (_, i) => i);
   };
 
   return (
@@ -240,119 +348,99 @@ const Header = () => {
         <div className="bg-primary-600">
           <div className="container mx-auto px-4">
             <nav className="flex items-center">
-              <div className="relative group">
-                <button className="flex items-center px-4 py-2 text-white hover:bg-primary-700 focus:outline-none">
+              <div className="relative group" ref={dropdownRef}>
+                <button 
+                  className="flex items-center px-4 py-2 text-white hover:bg-primary-700 focus:outline-none"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
                   <svg
                     className="w-5 h-5 mr-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
                       d="M4 6h16M4 12h16M4 18h16"
-                    ></path>
+                    />
                   </svg>
-                  All Categories
+                  Categories
                 </button>
-                <div className="absolute z-10 hidden group-hover:block bg-white shadow-lg text-gray-800 w-64">
-                  <div className="py-2">
-                    <Link
-                      to="/category/hospital-equipment"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Hospital Equipment
-                    </Link>
-                    <Link
-                      to="/category/laboratory"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Laboratory Supplies
-                    </Link>
-                    <Link
-                      to="/category/surgery"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Surgery & ICU
-                    </Link>
-                    <Link
-                      to="/category/dental"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Dental Equipment
-                    </Link>
-                    <Link
-                      to="/category/diagnostic"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Diagnostic Equipment
-                    </Link>
-                    <Link
-                      to="/category/orthopedic"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Orthopedic & Mobility
-                    </Link>
-                    <Link
-                      to="/category/disposables"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Medical Disposables
-                    </Link>
-                    <Link
-                      to="/category/ppe"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      PPE & Safety
-                    </Link>
-                    <Link
-                      to="/category/pharmacy"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Pharmacy Supplies
-                    </Link>
-                    <Link
-                      to="/category/emergency"
-                      className="block px-4 py-2 hover:bg-primary-100"
-                    >
-                      Emergency & First Aid
-                    </Link>
+
+                {isDropdownOpen && (
+                  <div className="absolute z-10 left-0 bg-white shadow-lg text-gray-800 flex border rounded-lg overflow-x-auto max-w-screen-xl"
+                       style={{ maxHeight: '400px' }}>
+                    {getLevels().map((level) => {
+                      const categoriesForLevel = getCategoriesForLevel(level);
+                      if (!categoriesForLevel?.length) {
+                        return null;
+                      }
+
+                      return (
+                        <div 
+                          key={level}
+                          className="w-[200px] border-r last:border-r-0 overflow-y-auto flex-shrink-0"
+                          style={{ maxHeight: '400px' }}
+                        >
+                          <div className="p-2 bg-gray-50 border-b sticky top-0">
+                            <span className="text-sm font-medium text-gray-600">
+                              {level === 0 ? 'Main Categories' : `Sub Categories`}
+                            </span>
+                          </div>
+                          <div className="py-1">
+                            {categoriesForLevel.map((category) => (
+                              <div
+                                key={category._id}
+                                className={`px-4 py-2 cursor-pointer hover:bg-primary-50 ${
+                                  selectedCategories[level]?._id === category._id ? 'bg-primary-50' : ''
+                                }`}
+                                onClick={(e) => handleCategoryClick(category, level, e)}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm text-gray-700">
+                                    {category.name}
+                                  </span>
+                                  {category.children?.length > 0 && (
+                                    <svg
+                                      className="w-4 h-4 text-gray-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M9 5l7 7-7 7"
+                                      />
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+                )}
               </div>
-              <div className="hidden md:flex">
-                <Link
-                  to="/new-arrivals"
-                  className="px-4 py-2 text-white hover:bg-primary-700"
-                >
+
+              {/* Other Navigation Items */}
+              <div className="hidden md:flex space-x-4 ml-4">
+                <Link to="/new-arrivals" className="px-3 py-2 text-white hover:bg-primary-700">
                   New Arrivals
                 </Link>
-                <Link
-                  to="/best-sellers"
-                  className="px-4 py-2 text-white hover:bg-primary-700"
-                >
+                <Link to="/best-sellers" className="px-3 py-2 text-white hover:bg-primary-700">
                   Best Sellers
                 </Link>
-                <Link
-                  to="/deals"
-                  className="px-4 py-2 text-white hover:bg-primary-700"
-                >
-                  Deals & Offers
+                <Link to="/deals" className="px-3 py-2 text-white hover:bg-primary-700">
+                  Deals
                 </Link>
-                <Link
-                  to="/brands"
-                  className="px-4 py-2 text-white hover:bg-primary-700"
-                >
-                  Top Brands
-                </Link>
-                <Link
-                  to="/hospital-solutions"
-                  className="px-4 py-2 text-white hover:bg-primary-700"
-                >
-                  Hospital Solutions
+                <Link to="/brands" className="px-3 py-2 text-white hover:bg-primary-700">
+                  Brands
                 </Link>
               </div>
             </nav>

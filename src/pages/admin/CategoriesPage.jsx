@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const Notification = ({ message, type, onClose }) => {
   if (!message) return null;
@@ -54,7 +55,16 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
   });
 
   useEffect(() => {
-    if (selectedCategory) {
+    if (mode === 'add' && selectedCategory) {
+      // When adding a sub-category, set the parent ID to the selected category
+      setFormData({
+        name: '',
+        description: '',
+        parentId: selectedCategory._id,
+        status: 'active',
+        image: ''
+      });
+    } else if (selectedCategory && mode === 'edit') {
       setFormData({
         name: selectedCategory.name || '',
         description: selectedCategory.description || '',
@@ -71,7 +81,7 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
         image: ''
       });
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, mode]);
 
   if (!isOpen) return null;
 
@@ -212,19 +222,55 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
   );
 };
 
+const CategorySkeleton = () => {
+  const rows = Array(5).fill(null);
+  
+  return rows.map((_, index) => (
+    <tr key={index} className="animate-pulse">
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center">
+          <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+          <div className="ml-4">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <div className="h-3 bg-gray-200 rounded w-24 mt-2"></div>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-4 bg-gray-200 rounded w-24"></div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-4 bg-gray-200 rounded w-8"></div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-5 bg-gray-200 rounded w-16"></div>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-right">
+        <div className="flex justify-end space-x-4">
+          <div className="h-4 bg-gray-200 rounded w-12"></div>
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+          <div className="h-4 bg-gray-200 rounded w-14"></div>
+        </div>
+      </td>
+    </tr>
+  ));
+};
+
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const { isLoading, startLoading, stopLoading } = useLoading();
 
   const fetchCategories = async () => {
     try {
-      setLoading(true);
+      startLoading();
       const response = await api.get('/categories', {
         params: {
           status: statusFilter === 'all' ? undefined : statusFilter
@@ -238,7 +284,7 @@ const CategoriesPage = () => {
       });
       console.error('Error fetching categories:', error);
     } finally {
-      setLoading(false);
+      stopLoading();
     }
   };
 
@@ -278,17 +324,22 @@ const CategoriesPage = () => {
     }
   };
 
-  const handleDeleteCategory = async (categoryId) => {
-    if (!window.confirm('Are you sure you want to delete this category and all its subcategories?')) {
-      return;
-    }
+  const handleDeleteClick = (category) => {
+    setCategoryToDelete(category);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete?._id) return;
 
     try {
-      await api.delete(`/categories/${categoryId}`);
+      await api.delete(`/categories/${categoryToDelete._id}`);
       setNotification({
         message: 'Category deleted successfully',
         type: 'success'
       });
+      setDeleteModalOpen(false);
+      setCategoryToDelete(null);
       fetchCategories();
     } catch (error) {
       setNotification({
@@ -297,6 +348,47 @@ const CategoriesPage = () => {
       });
       console.error('Error deleting category:', error);
     }
+  };
+
+  const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+    if (!isOpen) return null;
+  
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="flex items-center justify-center min-h-screen px-4">
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
+  
+          <div className="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <div className="mb-6">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-secondary-100 mb-4">
+                <svg className="h-6 w-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 text-center">Delete Category</h3>
+              <p className="mt-2 text-sm text-gray-500 text-center">
+                Are you sure you want to delete this category and all its subcategories? This action cannot be undone.
+              </p>
+            </div>
+  
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={onClose}
+                className="w-full sm:w-1/2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-sm font-medium transition duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onConfirm}
+                className="w-full sm:w-1/2 px-4 py-2 bg-secondary-500 text-white hover:bg-secondary-600 rounded-md text-sm font-medium transition duration-300"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderCategories = (categories = [], level = 0) => {
@@ -352,6 +444,7 @@ const CategoriesPage = () => {
               onClick={() => {
                 setSelectedCategory(category);
                 setModalMode('add');
+                // Initialize with the current category as parent for sub-category
                 setIsModalOpen(true);
               }}
               className="text-primary-500 hover:text-primary-600 mr-4"
@@ -359,7 +452,7 @@ const CategoriesPage = () => {
               Add Sub-category
             </button>
             <button 
-              onClick={() => handleDeleteCategory(category._id)}
+              onClick={() => handleDeleteClick(category)}
               className="text-secondary-500 hover:text-secondary-600"
             >
               Delete
@@ -457,39 +550,32 @@ const CategoriesPage = () => {
       </div>
 
       <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-solid border-primary-500 border-r-transparent"></div>
-            <p className="mt-2 text-gray-500">Loading categories...</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Products
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {renderCategories(categories)}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Slug
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Products
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {isLoading ? <CategorySkeleton /> : renderCategories(categories)}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <CategoryModal 
@@ -499,6 +585,15 @@ const CategoriesPage = () => {
         selectedCategory={selectedCategory}
         categories={categories}
         onSave={handleSaveCategory}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setCategoryToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
