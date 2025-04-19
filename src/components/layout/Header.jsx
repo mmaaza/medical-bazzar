@@ -530,43 +530,54 @@ const Header = () => {
             <Link
               to="/new-arrivals"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               New Arrivals
             </Link>
             <Link
               to="/best-sellers"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               Best Sellers
             </Link>
             <Link
               to="/deals"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               Deals & Offers
             </Link>
             <Link
               to="/brands"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               Top Brands
             </Link>
             <Link
               to="/hospital-solutions"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               Hospital Solutions
             </Link>
             <hr className="border-primary-600" />
             <button
-              onClick={handleAccountClick}
+              onClick={(e) => {
+                handleAccountClick();
+                setIsMenuOpen(false);
+              }}
               className="block w-full text-left px-3 py-2 hover:bg-primary-800 rounded-md"
             >
               {currentUser ? "My Account" : "Login"}
             </button>
             {currentUser && (
               <button
-                onClick={handleLogout}
+                onClick={(e) => {
+                  handleLogout();
+                  setIsMenuOpen(false);
+                }}
                 className="block w-full text-left px-3 py-2 hover:bg-primary-800 rounded-md"
               >
                 Logout
@@ -574,7 +585,10 @@ const Header = () => {
             )}
             <Link
               to="/wishlist"
-              onClick={handleWishlistClick}
+              onClick={(e) => {
+                handleWishlistClick(e);
+                setIsMenuOpen(false);
+              }}
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
             >
               Wishlist
@@ -582,6 +596,7 @@ const Header = () => {
             <Link
               to="/cart"
               className="block px-3 py-2 hover:bg-primary-800 rounded-md"
+              onClick={() => setIsMenuOpen(false)}
             >
               Cart (3)
             </Link>

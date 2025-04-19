@@ -229,7 +229,7 @@ const AdminLayout = () => {
                 </svg>
               </button>
               <div className="ml-4 lg:ml-0">
-                <h2 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100">
+                <h2 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100 hidden md:block">
                   Welcome, Admin MB Nepal
                 </h2>
               </div>
