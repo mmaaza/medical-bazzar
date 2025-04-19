@@ -32,6 +32,7 @@ const Header = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -104,10 +105,16 @@ const Header = () => {
       return newSelected;
     });
 
+    // On mobile, move to next level if category has children
+    if (window.innerWidth < 768 && category.children?.length > 0) {
+      setSelectedLevelIndex(level + 1);
+    }
+
     // Only navigate if it's a leaf category (no children)
     if (!category.children?.length) {
       setIsDropdownOpen(false);
       setSelectedCategories([]);
+      setSelectedLevelIndex(0);
       navigate(`/category/${category.slug}`);
     }
   };
@@ -119,6 +126,11 @@ const Header = () => {
       setSelectedCategories([]);
       navigate(`/category/${category.slug}`);
     }
+  };
+
+  const handleBackClick = () => {
+    setSelectedLevelIndex(prev => Math.max(0, prev - 1));
+    setSelectedCategories(prev => prev.slice(0, -1));
   };
 
   const getCategoriesForLevel = (level) => {
@@ -370,60 +382,90 @@ const Header = () => {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute z-10 left-0 bg-white shadow-lg text-gray-800 flex border rounded-lg overflow-x-auto max-w-screen-xl"
-                       style={{ maxHeight: '400px' }}>
-                    {getLevels().map((level) => {
-                      const categoriesForLevel = getCategoriesForLevel(level);
-                      if (!categoriesForLevel?.length) {
-                        return null;
-                      }
+                  <div 
+                    className="fixed md:absolute z-10 top-[88px] md:top-full left-0 right-0 bg-white shadow-lg text-gray-800 border md:w-auto md:max-w-screen-xl"
+                    style={{ maxHeight: '80vh' }}
+                  >
+                    <div className="md:flex md:overflow-x-auto overflow-x-hidden flex-row w-full">
+                      {getLevels().map((level) => {
+                        const categoriesForLevel = getCategoriesForLevel(level);
+                        if (!categoriesForLevel?.length) {
+                          return null;
+                        }
 
-                      return (
-                        <div 
-                          key={level}
-                          className="w-[200px] border-r last:border-r-0 overflow-y-auto flex-shrink-0"
-                          style={{ maxHeight: '400px' }}
-                        >
-                          <div className="p-2 bg-gray-50 border-b sticky top-0">
-                            <span className="text-sm font-medium text-gray-600">
-                              {level === 0 ? 'Main Categories' : `Sub Categories`}
-                            </span>
-                          </div>
-                          <div className="py-1">
-                            {categoriesForLevel.map((category) => (
-                              <div
-                                key={category._id}
-                                className={`px-4 py-2 cursor-pointer hover:bg-primary-50 ${
-                                  selectedCategories[level]?._id === category._id ? 'bg-primary-50' : ''
-                                }`}
-                                onClick={(e) => handleCategoryClick(category, level, e)}
-                              >
-                                <div className="flex justify-between items-center">
-                                  <span className="text-sm text-gray-700">
-                                    {category.name}
-                                  </span>
-                                  {category.children?.length > 0 && (
-                                    <svg
-                                      className="w-4 h-4 text-gray-400"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M9 5l7 7-7 7"
-                                      />
-                                    </svg>
-                                  )}
+                        return (
+                          <div 
+                            key={level}
+                            className={`w-full md:w-[200px] border-r last:border-r-0 flex-shrink-0 max-h-[80vh] overflow-y-auto bg-white
+                                     ${window.innerWidth < 768 
+                                       ? level === selectedLevelIndex 
+                                         ? 'block' 
+                                         : 'hidden' 
+                                       : 'block'}`}
+                          >
+                            <div className="p-2 bg-gray-50 border-b sticky top-0 z-10 flex items-center">
+                              {level > 0 && window.innerWidth < 768 && (
+                                <button
+                                  onClick={handleBackClick}
+                                  className="mr-2 p-1 hover:bg-gray-100 rounded-full"
+                                >
+                                  <svg 
+                                    className="w-5 h-5 text-gray-600" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path 
+                                      strokeLinecap="round" 
+                                      strokeLinejoin="round" 
+                                      strokeWidth="2" 
+                                      d="M15 19l-7-7 7-7"
+                                    />
+                                  </svg>
+                                </button>
+                              )}
+                              <span className="text-sm font-medium text-gray-600">
+                                {level === 0 
+                                  ? 'Main Categories' 
+                                  : selectedCategories[level - 1]?.name || 'Sub Categories'}
+                              </span>
+                            </div>
+                            <div className="py-1">
+                              {categoriesForLevel.map((category) => (
+                                <div
+                                  key={category._id}
+                                  className={`px-4 py-3 md:py-2 cursor-pointer hover:bg-primary-50 ${
+                                    selectedCategories[level]?._id === category._id ? 'bg-primary-50' : ''
+                                  }`}
+                                  onClick={(e) => handleCategoryClick(category, level, e)}
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-base md:text-sm text-gray-700">
+                                      {category.name}
+                                    </span>
+                                    {category.children?.length > 0 && (
+                                      <svg
+                                        className="w-5 h-5 md:w-4 md:h-4 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M9 5l7 7-7 7"
+                                        />
+                                      </svg>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

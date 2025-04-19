@@ -85,9 +85,10 @@ const HomePage = () => {
       </div>
 
       {/* Categories Section */}
-      <section className="py-8 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+      <section className="py-4 md:py-8 bg-white">
+        <div className="md:container mx-auto px-4">
+          {/* Desktop Grid View */}
+          <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
             {categories.map((category) => (
               <Link
                 key={category.id}
@@ -105,16 +106,46 @@ const HomePage = () => {
                   </div>
                   <div className="p-3">
                     <h3 className="text-sm font-medium text-gray-900 truncate">{category.name}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">{category.count} items</p>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
+
+          {/* Mobile Slider View */}
+          <div className="sm:hidden">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={12}
+              slidesPerView={2.2}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              className="categories-swiper"
+            >
+              {categories.map((category) => (
+                <SwiperSlide key={category.id}>
+                  <Link
+                    to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="block"
+                  >
+                    <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                      <div className="relative aspect-square">
+                        <img
+                          src={category.image}
+                          alt={category.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-2">
+                        <h3 className="text-xs font-medium text-gray-900 truncate">{category.name}</h3>
+                      </div>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
       </section>
-
-      
 
       {/* Flash Deals Section */}
       <section className="py-8 md:py-12 bg-gradient-to-br from-accent-50 to-primary-50">
@@ -126,7 +157,38 @@ const HomePage = () => {
             </div>
             <Link to="/flash-deals" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="relative">
+          
+          {/* Mobile Grid View */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {flashDeals.map(deal => (
+              <div key={deal.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-accent-200">
+                <div className="relative">
+                  <img src={deal.image} alt={deal.name} className="w-full h-32 object-cover" />
+                  <div className="absolute top-1 right-1 bg-accent-500 text-white text-xs px-1.5 py-0.5 rounded">
+                    {deal.timeLeft}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">{deal.name}</h3>
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-bold text-secondary-600">${deal.salePrice.toFixed(2)}</span>
+                      <span className="text-xs text-gray-500 line-through">${deal.price.toFixed(2)}</span>
+                    </div>
+                    <span className="bg-secondary-100 text-secondary-800 text-xs font-medium px-1.5 py-0.5 rounded self-start">
+                      {Math.round(((deal.price - deal.salePrice) / deal.price) * 100)}% OFF
+                    </span>
+                  </div>
+                  <button className="w-full mt-2 bg-accent-500 hover:bg-accent-600 text-white py-1.5 px-3 rounded text-xs font-medium transition duration-300">
+                    Buy Now
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop/Tablet Slider View */}
+          <div className="hidden sm:block relative">
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={20}
@@ -151,54 +213,6 @@ const HomePage = () => {
               ))}
             </Swiper>
           </div>
-        </div>
-      </section>
-
-      {/* Trending Categories */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold">Medical Categories</h2>
-            </div>
-            <Link to="/categories" className="text-primary-500 hover:text-primary-600 font-medium">View All</Link>
-          </div>
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 4000, disableOnInteraction: false }}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-              },
-              1024: {
-                slidesPerView: 3,
-              }
-            }}
-            className="categories-swiper"
-          >
-            {trendingCategories.map(category => (
-              <SwiperSlide key={category.id}>
-                <Link to={`/category/${category.name.toLowerCase().replace(' ', '-')}`} className="block group">
-                  <div className="relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
-                    <img 
-                      src={category.image} 
-                      alt={category.name} 
-                      className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-white text-2xl font-bold mb-1">{category.name}</h3>
-                      <p className="text-primary-100">{category.count} products</p>
-                    </div>
-                  </div>
-                </Link>
-              </SwiperSlide>
-            ))}
-          </Swiper>
         </div>
       </section>
 
@@ -305,7 +319,49 @@ const HomePage = () => {
             </div>
             <Link to="/products" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="relative">
+
+          {/* Mobile Grid View */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {featuredProducts.map(product => (
+              <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+                <div className="relative">
+                  <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
+                  {product.discount > 0 && (
+                    <div className="absolute top-1 right-1 bg-secondary-500 text-white text-xs px-1.5 py-0.5 rounded">
+                      -{product.discount}%
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-bold text-gray-900">${product.price}</span>
+                    {product.discount > 0 && (
+                      <span className="text-xs text-gray-500 line-through">
+                        ${(product.price / (1 - product.discount / 100)).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <div className="flex items-center text-accent-500">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-accent-500' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="ml-1">({product.reviews})</span>
+                  </div>
+                  <button className="w-full mt-2 bg-primary-500 hover:bg-primary-600 text-white py-1.5 px-3 rounded text-xs font-medium transition duration-300">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop/Tablet Slider View */}
+          <div className="hidden sm:block relative">
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={20}
@@ -365,7 +421,49 @@ const HomePage = () => {
             </div>
             <Link to="/new-arrivals" className="text-sm md:text-base text-primary-500 hover:text-primary-600 font-medium">View All</Link>
           </div>
-          <div className="relative">
+
+          {/* Mobile Grid View */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {newArrivals.map(product => (
+              <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+                <div className="relative">
+                  <img src={product.image} alt={product.name} className="w-full h-32 object-cover" />
+                  {product.discount > 0 && (
+                    <div className="absolute top-1 right-1 bg-secondary-500 text-white text-xs px-1.5 py-0.5 rounded">
+                      -{product.discount}%
+                    </div>
+                  )}
+                </div>
+                <div className="p-2">
+                  <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-bold text-gray-900">${product.price}</span>
+                    {product.discount > 0 && (
+                      <span className="text-xs text-gray-500 line-through">
+                        ${(product.price / (1 - product.discount / 100)).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <div className="flex items-center text-accent-500">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'text-accent-500' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="ml-1">({product.reviews})</span>
+                  </div>
+                  <button className="w-full mt-2 bg-primary-500 hover:bg-primary-600 text-white py-1.5 px-3 rounded text-xs font-medium transition duration-300">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop/Tablet Slider View */}
+          <div className="hidden sm:block relative">
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={20}
