@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useLoading } from '../../contexts/LoadingContext';
+import MediaUploadButton from '../../components/ui/MediaUploadButton';
 
 const Notification = ({ message, type, onClose }) => {
   if (!message) return null;
@@ -56,7 +57,6 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
 
   useEffect(() => {
     if (mode === 'add' && selectedCategory) {
-      // When adding a sub-category, set the parent ID to the selected category
       setFormData({
         name: '',
         description: '',
@@ -82,6 +82,13 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
       });
     }
   }, [selectedCategory, mode]);
+
+  const handleMediaSelect = (media) => {
+    setFormData(prev => ({
+      ...prev,
+      image: media.url
+    }));
+  };
 
   if (!isOpen) return null;
 
@@ -190,13 +197,31 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Image URL</label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm text-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                />
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Image</label>
+                <div className="space-y-3">
+                  {formData.image && (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden">
+                      <img 
+                        src={formData.image} 
+                        alt="Category preview" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                        className="absolute top-1 right-1 p-1 bg-red-500 rounded-full text-white hover:bg-red-600"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  <MediaUploadButton
+                    onSelect={handleMediaSelect}
+                    selectedMedia={formData.image}
+                    className="w-full justify-center"
+                  />
+                </div>
               </div>
             </div>
 
