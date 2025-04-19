@@ -383,10 +383,10 @@ const Header = () => {
 
                 {isDropdownOpen && (
                   <div 
-                    className="fixed md:absolute z-10 top-[88px] md:top-full left-0 right-0 bg-white shadow-lg text-gray-800 border md:w-auto md:max-w-screen-xl"
+                    className="fixed md:absolute z-10 top-[88px] md:top-full left-0 right-0 bg-white shadow-lg text-gray-800 border md:rounded-lg"
                     style={{ maxHeight: '80vh' }}
                   >
-                    <div className="md:flex md:overflow-x-auto overflow-x-hidden flex-row w-full">
+                    <div className="md:flex md:flex-nowrap md:overflow-visible overflow-x-hidden w-full">
                       {getLevels().map((level) => {
                         const categoriesForLevel = getCategoriesForLevel(level);
                         if (!categoriesForLevel?.length) {
@@ -396,7 +396,7 @@ const Header = () => {
                         return (
                           <div 
                             key={level}
-                            className={`w-full md:w-[200px] border-r last:border-r-0 flex-shrink-0 max-h-[80vh] overflow-y-auto bg-white
+                            className={`w-full md:min-w-[250px] md:w-auto border-r last:border-r-0 flex-shrink-0 max-h-[80vh] overflow-y-auto bg-white
                                      ${window.innerWidth < 768 
                                        ? level === selectedLevelIndex 
                                          ? 'block' 
