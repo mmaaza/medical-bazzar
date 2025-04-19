@@ -7,7 +7,7 @@ import { useLoading } from '../../contexts/LoadingContext';
 
 const FormField = ({ label, name, type = "text", value, onChange, placeholder, required = true }) => (
   <div className="space-y-1.5">
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+    <label htmlFor={name} className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300">
       {label}
     </label>
     <input
@@ -17,7 +17,7 @@ const FormField = ({ label, name, type = "text", value, onChange, placeholder, r
       value={value}
       onChange={onChange}
       required={required}
-      className="block w-full rounded-lg border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-500 sm:text-sm sm:leading-6 transition duration-200 ease-in-out hover:border-gray-400"
+      className="block w-full rounded-lg border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 px-4 py-2.5 text-admin-slate-900 dark:text-admin-slate-100 shadow-sm ring-1 ring-inset ring-admin-slate-300 dark:ring-admin-slate-700 placeholder:text-admin-slate-400 dark:placeholder:text-admin-slate-500 focus:ring-2 focus:ring-inset focus:ring-admin-ucla-500 sm:text-sm sm:leading-6 transition duration-200 ease-in-out hover:border-admin-slate-400"
       placeholder={placeholder}
     />
   </div>
@@ -37,18 +37,18 @@ const FileUploadField = ({ label, name, value, onChange, accept = ".pdf,.doc,.do
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={name} className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300">
         {label}
       </label>
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          className="px-3 py-2 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 border border-admin-slate-300 dark:border-admin-slate-700 rounded-md shadow-sm hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
         >
           Choose File
         </button>
-        <span className="text-sm text-gray-500">{fileName || 'No file chosen'}</span>
+        <span className="text-sm text-admin-slate-500 dark:text-admin-slate-400">{fileName || 'No file chosen'}</span>
         <input
           type="file"
           ref={fileInputRef}
@@ -64,32 +64,172 @@ const FileUploadField = ({ label, name, value, onChange, accept = ".pdf,.doc,.do
   );
 };
 
+// Modal components
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+        <div className="fixed inset-0 bg-admin-slate-900/75 transition-opacity" onClick={onClose}></div>
+        <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-admin-slate-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+          <div className="px-4 pb-4 pt-5 sm:p-6">
+            <div className="flex items-start justify-between">
+              <h3 className="text-lg font-semibold leading-6 text-admin-slate-900 dark:text-admin-slate-100">{title}</h3>
+              <button
+                onClick={onClose}
+                className="ml-auto flex h-7 w-7 items-center justify-center rounded-full text-admin-slate-400 hover:text-admin-slate-500 dark:text-admin-slate-500 dark:hover:text-admin-slate-400"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <div className="mt-4">
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const VendorForm = ({ onSubmit, onClose, initialData = null, isEdit = false }) => {
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    primaryPhone: initialData?.primaryPhone || '',
+    secondaryPhone: initialData?.secondaryPhone || '',
+    city: initialData?.city || '',
+    companyRegistrationCertificate: initialData?.companyRegistrationCertificate || '',
+    vatNumber: initialData?.vatNumber || '',
+    status: initialData?.status || 'pending'
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  return (
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      onSubmit(formData);
+    }} className="space-y-4">
+      {/* Form fields */}
+      <FormField
+        label="Business Name"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        placeholder="Enter business name"
+      />
+      <FormField
+        label="Email"
+        name="email"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        placeholder="Enter business email"
+      />
+      <FormField
+        label="Primary Phone"
+        name="primaryPhone"
+        value={formData.primaryPhone}
+        onChange={handleChange}
+        placeholder="Enter primary phone number"
+      />
+      <FormField
+        label="Secondary Phone"
+        name="secondaryPhone"
+        value={formData.secondaryPhone}
+        onChange={handleChange}
+        placeholder="Enter secondary phone number"
+        required={false}
+      />
+      <FormField
+        label="City"
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        placeholder="Enter city"
+      />
+      <FormField
+        label="VAT Number"
+        name="vatNumber"
+        value={formData.vatNumber}
+        onChange={handleChange}
+        placeholder="Enter VAT number"
+      />
+      <FileUploadField
+        label="Company Registration Certificate"
+        name="companyRegistrationCertificate"
+        onChange={handleChange}
+        accept=".pdf,.jpg,.jpeg,.png"
+      />
+      {isEdit && (
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300">
+            Status
+          </label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="block w-full rounded-lg border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 px-4 py-2.5 text-admin-slate-900 dark:text-admin-slate-100 shadow-sm ring-1 ring-inset ring-admin-slate-300 dark:ring-admin-slate-700 focus:ring-2 focus:ring-inset focus:ring-admin-ucla-500 sm:text-sm sm:leading-6"
+          >
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      )}
+      <div className="mt-6 flex justify-end space-x-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 border border-admin-slate-300 dark:border-admin-slate-700 rounded-md shadow-sm hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 text-sm font-medium text-white bg-admin-ucla-500 hover:bg-admin-ucla-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
+        >
+          {isEdit ? 'Update Vendor' : 'Create Vendor'}
+        </button>
+      </div>
+    </form>
+  );
+};
+
 // Skeleton loader component for vendors table
 const VendorSkeletonLoader = () => (
   <tr>
     <td className="px-6 py-4 whitespace-nowrap">
       <div className="flex items-center">
         <div className="w-full">
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-          <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+          <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-3/4 mb-2 animate-pulse"></div>
+          <div className="h-3 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-1/2 animate-pulse"></div>
         </div>
       </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+      <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-3/4 mb-2 animate-pulse"></div>
+      <div className="h-3 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-1/2 animate-pulse"></div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+      <div className="h-5 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-20 animate-pulse"></div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+      <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24 animate-pulse"></div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right">
       <div className="flex justify-end space-x-3">
-        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-        <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+        <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24 animate-pulse"></div>
+        <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-16 animate-pulse"></div>
+        <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24 animate-pulse"></div>
       </div>
     </td>
   </tr>
@@ -106,15 +246,6 @@ const VendorsPage = () => {
   const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
   const [loginAsVendorLoading, setLoginAsVendorLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    primaryPhone: '',
-    secondaryPhone: '',
-    city: '',
-    companyRegistrationCertificate: '',
-    vatNumber: ''
-  });
 
   const fetchVendors = async () => {
     try {
@@ -134,8 +265,7 @@ const VendorsPage = () => {
     fetchVendors();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (formData) => {
     try {
       startLoading();
       const formDataToSend = new FormData();
@@ -174,15 +304,6 @@ const VendorsPage = () => {
         toast.success('Vendor created successfully');
         setShowForm(false);
         fetchVendors();
-        setFormData({
-          name: '',
-          email: '',
-          primaryPhone: '',
-          secondaryPhone: '',
-          city: '',
-          companyRegistrationCertificate: '',
-          vatNumber: ''
-        });
       } else {
         throw new Error(response.data?.error || 'Failed to create vendor');
       }
@@ -193,11 +314,6 @@ const VendorsPage = () => {
       stopLoading();
       setUploadProgress(0);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLoginAsVendor = async (vendor) => {
@@ -243,22 +359,11 @@ const VendorsPage = () => {
   // Function to open edit form with selected vendor data
   const openEditForm = (vendor) => {
     setSelectedVendor(vendor);
-    setFormData({
-      name: vendor.name || '',
-      email: vendor.email || '',
-      primaryPhone: vendor.primaryPhone || '',
-      secondaryPhone: vendor.secondaryPhone || '',
-      city: vendor.city || '',
-      companyRegistrationCertificate: vendor.companyRegistrationCertificate || '',
-      vatNumber: vendor.vatNumber || '',
-      status: vendor.status || 'pending' // Add status initialization
-    });
     setShowEditForm(true);
   };
 
   // Function to handle edit form submission
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
+  const handleEditSubmit = async (formData) => {
     try {
       startLoading();
       const formDataToSend = new FormData();
@@ -280,35 +385,16 @@ const VendorsPage = () => {
         });
 
         if (mediaResponse.data?.data?.[0]?.url) {
-          // Delete old file if it exists
-          if (formData.companyRegistrationCertificate && typeof formData.companyRegistrationCertificate === 'string') {
-            const oldMediaId = formData.companyRegistrationCertificate.split('/').pop().split('_')[0];
-            if (oldMediaId) {
-              try {
-                await api.delete(`/media/${oldMediaId}`);
-              } catch (error) {
-                console.error('Error deleting old file:', error);
-              }
-            }
-          }
-
           formDataToSend.set('companyRegistrationCertificate', mediaResponse.data.data[0].url);
         }
-      } else {
-        // Keep existing file URL
-        formDataToSend.set('companyRegistrationCertificate', formData.companyRegistrationCertificate || '');
       }
 
       // Create update data object
       const updateData = {
-        name: formData.name,
-        email: formData.email,
-        primaryPhone: formData.primaryPhone,
-        secondaryPhone: formData.secondaryPhone,
-        city: formData.city,
-        vatNumber: formData.vatNumber,
-        status: formData.status, // Include status in update
-        companyRegistrationCertificate: formDataToSend.get('companyRegistrationCertificate')
+        ...formData,
+        companyRegistrationCertificate: formData.companyRegistrationCertificate instanceof File 
+          ? formDataToSend.get('companyRegistrationCertificate') 
+          : formData.companyRegistrationCertificate
       };
 
       const response = await api.put(`/vendors/${selectedVendor._id}`, updateData);
@@ -316,6 +402,7 @@ const VendorsPage = () => {
       if (response.data?.success) {
         toast.success('Vendor updated successfully');
         setShowEditForm(false);
+        setSelectedVendor(null);
         fetchVendors();
       } else {
         throw new Error(response.data?.error || 'Failed to update vendor');
@@ -329,438 +416,127 @@ const VendorsPage = () => {
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return 'bg-admin-green-100 dark:bg-admin-green-900/30 text-admin-green-800 dark:text-admin-green-400';
+      case 'processing':
+        return 'bg-admin-blue-100 dark:bg-admin-blue-900/30 text-admin-blue-800 dark:text-admin-blue-400';
+      case 'pending':
+        return 'bg-admin-yellow-100 dark:bg-admin-yellow-900/30 text-admin-yellow-800 dark:text-admin-yellow-400';
+      case 'cancelled':
+        return 'bg-admin-red-100 dark:bg-admin-red-900/30 text-admin-red-800 dark:text-admin-red-400';
+      default:
+        return 'bg-admin-slate-100 dark:bg-admin-slate-700/50 text-admin-slate-800 dark:text-admin-slate-300';
+    }
+  };
+
+  const getPaymentStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return 'bg-admin-green-100 dark:bg-admin-green-900/30 text-admin-green-800 dark:text-admin-green-400';
+      case 'pending':
+        return 'bg-admin-yellow-100 dark:bg-admin-yellow-900/30 text-admin-yellow-800 dark:text-admin-yellow-400';
+      case 'failed':
+        return 'bg-admin-red-100 dark:bg-admin-red-900/30 text-admin-red-800 dark:text-admin-red-400';
+      default:
+        return 'bg-admin-slate-100 dark:bg-admin-slate-700/50 text-admin-slate-800 dark:text-admin-slate-300';
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Vendors</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-300"
-        >
-          Add New Vendor
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-admin-slate-800 to-admin-slate-700 dark:from-admin-slate-900 dark:to-admin-slate-800 p-8">
+        <div className="relative z-10">
+          <h1 className="text-2xl font-bold text-white">Vendors</h1>
+          <p className="mt-1 text-sm text-admin-slate-200">
+            Manage and track all vendors
+          </p>
+        </div>
+        <div className="absolute right-0 top-0 w-64 h-64 bg-gradient-to-br from-admin-ucla-500/20 to-transparent rounded-full transform translate-x-32 -translate-y-32"></div>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="relative max-w-xs">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            className="block w-full rounded-lg border-admin-slate-200 dark:border-admin-slate-700 pl-10 pr-3 py-2 text-sm placeholder-admin-slate-500 dark:placeholder-admin-slate-400 bg-white dark:bg-admin-slate-800 text-admin-slate-900 dark:text-admin-slate-100 focus:border-admin-ucla-500 focus:ring-admin-ucla-500"
+            placeholder="Search vendors..."
+          />
+        </div>
+        <button className="px-4 py-2 bg-admin-ucla-500 hover:bg-admin-ucla-600 text-white rounded-lg text-sm font-medium transition-colors duration-200">
+          Export
         </button>
       </div>
 
-      {/* Registration Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 z-overlay flex items-start justify-center overflow-y-auto">
-          <div className="fixed inset-0 bg-gray-900/50"></div>
-          <div className="relative w-full max-w-3xl my-8 mx-auto p-4">
-            <div className="bg-white rounded-lg shadow-xl relative">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Register New Vendor</h2>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="p-6 space-y-8">
-                {/* Business Details Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    Business Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Enter name"
-                    />
-                    <FormField
-                      label="Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="Enter email"
-                    />
-                  </div>
-                </div>
-
-                {/* Contact Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Contact Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Primary Phone"
-                      name="primaryPhone"
-                      value={formData.primaryPhone}
-                      onChange={handleChange}
-                      placeholder="Enter primary phone"
-                    />
-                    <FormField
-                      label="Secondary Phone"
-                      name="secondaryPhone"
-                      value={formData.secondaryPhone}
-                      onChange={handleChange}
-                      placeholder="Enter secondary phone"
-                    />
-                  </div>
-                </div>
-
-                {/* Address Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Address
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="City"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      placeholder="Enter city"
-                    />
-                  </div>
-                </div>
-
-                {/* Legal Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Legal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FileUploadField
-                      label="Company Registration Certificate"
-                      name="companyRegistrationCertificate"
-                      onChange={handleChange}
-                      accept=".pdf,.doc,.docx,image/*"
-                    />
-                    <FormField
-                      label="VAT Number"
-                      name="vatNumber"
-                      value={formData.vatNumber}
-                      onChange={handleChange}
-                      placeholder="Enter VAT number"
-                    />
-                  </div>
-                  {uploadProgress > 0 && uploadProgress < 100 && (
-                    <div className="mt-2">
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-primary-500 h-2.5 rounded-full transition-all duration-300" 
-                          style={{ width: `${uploadProgress}%` }}
-                        />
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">Uploading: {uploadProgress}%</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Form Actions */}
-                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={() => setShowForm(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Creating...
-                      </>
-                    ) : (
-                      'Create Vendor'
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Form Modal */}
-      {showEditForm && selectedVendor && (
-        <div className="fixed inset-0 z-overlay flex items-start justify-center overflow-y-auto">
-          <div className="fixed inset-0 bg-gray-900/50"></div>
-          <div className="relative w-full max-w-3xl my-8 mx-auto p-4">
-            <div className="bg-white rounded-lg shadow-xl relative">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Edit Vendor Account</h2>
-                <button
-                  onClick={() => setShowEditForm(false)}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <form onSubmit={handleEditSubmit} className="p-6 space-y-8">
-                {/* Status Selection Section */}
-                <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Account Status</h3>
-                    <p className="text-sm text-gray-500">Select the appropriate status for this vendor account</p>
-                  </div>
-                  <div className="relative">
-                    <select
-                      name="status"
-                      value={formData.status}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        status: e.target.value
-                      })}
-                      className={`rounded-md py-2 pl-3 pr-10 text-sm font-medium focus:outline-none focus:ring-2 border focus:ring-primary-500 focus:border-primary-500 ${
-                        formData.status === 'active' 
-                          ? 'bg-green-50 text-green-700' 
-                          : formData.status === 'pending' 
-                            ? 'bg-yellow-50 text-yellow-700' 
-                            : 'bg-red-50 text-red-700'
-                      }`}
-                    >
-                      <option value="pending" className="bg-white text-yellow-700">Pending</option>
-                      <option value="active" className="bg-white text-green-700">Active</option>
-                      <option value="suspended" className="bg-white text-red-700">Suspended</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Business Details Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    Business Details
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Enter name"
-                    />
-                    <FormField
-                      label="Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="Enter email"
-                    />
-                  </div>
-                </div>
-
-                {/* Contact Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Contact Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="Primary Phone"
-                      name="primaryPhone"
-                      value={formData.primaryPhone}
-                      onChange={handleChange}
-                      placeholder="Enter primary phone"
-                    />
-                    <FormField
-                      label="Secondary Phone"
-                      name="secondaryPhone"
-                      value={formData.secondaryPhone}
-                      onChange={handleChange}
-                      placeholder="Enter secondary phone"
-                    />
-                  </div>
-                </div>
-
-                {/* Address Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Address
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      label="City"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleChange}
-                      placeholder="Enter city"
-                    />
-                  </div>
-                </div>
-
-                {/* Legal Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Legal Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FileUploadField
-                      label="Company Registration Certificate"
-                      name="companyRegistrationCertificate"
-                      value={formData.companyRegistrationCertificate}
-                      onChange={handleChange}
-                      accept=".pdf,.doc,.docx,image/*"
-                    />
-                    {uploadProgress > 0 && uploadProgress < 100 && (
-                      <div className="mt-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-primary-500 h-2.5 rounded-full transition-all duration-300" 
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1">Uploading: {uploadProgress}%</p>
-                      </div>
-                    )}
-                    <FormField
-                      label="VAT Number"
-                      name="vatNumber"
-                      value={formData.vatNumber}
-                      onChange={handleChange}
-                      placeholder="Enter VAT number"
-                    />
-                  </div>
-                </div>
-
-                {/* Form Actions */}
-                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={() => setShowEditForm(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Updating...
-                      </>
-                    ) : (
-                      'Update Vendor'
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Vendors List */}
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
+          <thead className="bg-admin-slate-50 dark:bg-admin-slate-800/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Business</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">Business</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">Contact</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">Documents</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-admin-slate-800 divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
             {isLoading ? (
-              // Skeleton loaders while data is being fetched
               Array(5).fill(0).map((_, index) => (
                 <VendorSkeletonLoader key={index} />
               ))
             ) : vendors.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="5" className="px-6 py-4 text-center text-admin-slate-500 dark:text-admin-slate-400">
                   No vendors found. Click "Add New Vendor" to create one.
                 </td>
               </tr>
             ) : (
               vendors.map((vendor) => (
-                <tr key={vendor._id}>
+                <tr key={vendor._id} className="hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 transition-colors duration-200">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
-                        <div className="text-sm text-gray-500">{vendor.email}</div>
+                        <div className="text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100">{vendor.name}</div>
+                        <div className="text-sm text-admin-slate-500 dark:text-admin-slate-400">{vendor.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{vendor.primaryPhone}</div>
-                    <div className="text-sm text-gray-500">{vendor.secondaryPhone}</div>
+                    <div className="text-sm text-admin-slate-900 dark:text-admin-slate-100">{vendor.primaryPhone}</div>
+                    <div className="text-sm text-admin-slate-500 dark:text-admin-slate-400">{vendor.secondaryPhone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                      ${vendor.status === 'active' ? 'bg-green-100 text-green-800' : 
-                        vendor.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-red-100 text-red-800'}`}>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(vendor.status)}`}>
                       {vendor.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`${vendor.companyRegistrationCertificate ? 'text-green-600' : 'text-yellow-600'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-slate-500 dark:text-admin-slate-400">
+                    <span className={`${vendor.companyRegistrationCertificate ? 'text-admin-green-600 dark:text-admin-green-400' : 'text-admin-yellow-600 dark:text-admin-yellow-400'}`}>
                       {vendor.companyRegistrationCertificate ? 'Uploaded' : 'Pending Upload'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button 
-                      className="text-primary-600 hover:text-primary-900 mr-3"
+                      className="text-admin-ucla-600 hover:text-admin-ucla-700 dark:text-admin-ucla-400 dark:hover:text-admin-ucla-300 transition-colors duration-200 mr-3"
                       onClick={() => handleLoginAsVendor(vendor)}
                       disabled={loginAsVendorLoading}
                     >
                       {loginAsVendorLoading ? 'Accessing...' : 'Login as Vendor'}
                     </button>
                     <button 
-                      className="text-indigo-600 hover:text-indigo-900 mr-3"
+                      className="text-admin-slate-500 hover:text-admin-slate-600 dark:text-admin-slate-400 dark:hover:text-admin-slate-300 transition-colors duration-200 mr-3"
                       onClick={() => openEditForm(vendor)}
                     >
                       Edit
                     </button>
                     <button 
-                      className="text-primary-600 hover:text-primary-700"
+                      className="text-admin-ucla-600 hover:text-admin-ucla-700 dark:text-admin-ucla-400 dark:hover:text-admin-ucla-300 transition-colors duration-200"
                       onClick={() => navigate(`/admin/vendors/${vendor._id}`)}
                     >
                       View
@@ -772,6 +548,56 @@ const VendorsPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between py-3">
+        <div className="flex items-center">
+          <p className="text-sm text-admin-slate-700 dark:text-admin-slate-400">
+            Showing <span className="font-medium">1</span> to <span className="font-medium">{vendors.length}</span> of{' '}
+            <span className="font-medium">{vendors.length}</span> results
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <button className="inline-flex items-center px-3 py-2 border border-admin-slate-200 dark:border-admin-slate-700 text-sm font-medium rounded-lg text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 transition-colors duration-200">
+            Previous
+          </button>
+          <button className="inline-flex items-center px-3 py-2 border border-admin-slate-200 dark:border-admin-slate-700 text-sm font-medium rounded-lg text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 transition-colors duration-200">
+            Next
+          </button>
+        </div>
+      </div>
+
+      {/* Add/Edit Vendor Modal */}
+      <Modal 
+        isOpen={showForm || showEditForm} 
+        onClose={() => {
+          setShowForm(false);
+          setShowEditForm(false);
+          setSelectedVendor(null);
+        }}
+        title={showEditForm ? 'Edit Vendor' : 'Add New Vendor'}
+      >
+        <VendorForm
+          onSubmit={showEditForm ? handleEditSubmit : handleSubmit}
+          onClose={() => {
+            setShowForm(false);
+            setShowEditForm(false);
+            setSelectedVendor(null);
+          }}
+          initialData={selectedVendor}
+          isEdit={showEditForm}
+        />
+      </Modal>
+
+      {/* Add Vendor Button */}
+      <button
+        onClick={() => setShowForm(true)}
+        className="fixed right-6 bottom-6 p-3 bg-admin-ucla-500 hover:bg-admin-ucla-600 text-white rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      </button>
     </div>
   );
 };

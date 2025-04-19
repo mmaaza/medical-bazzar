@@ -10,18 +10,18 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4">
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
+        <div className="fixed inset-0 bg-admin-slate-900/50 transition-opacity" onClick={onClose}></div>
 
         {/* Modal */}
-        <div className="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+        <div className="relative bg-white dark:bg-admin-slate-800 rounded-lg max-w-md w-full p-6 shadow-xl">
           <div className="mb-6">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-secondary-100 mb-4">
-              <svg className="h-6 w-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-admin-ucla-100 dark:bg-admin-ucla-900/30 mb-4">
+              <svg className="h-6 w-6 text-admin-ucla-500 dark:text-admin-ucla-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 text-center">Delete Media Item</h3>
-            <p className="mt-2 text-sm text-gray-500 text-center">
+            <h3 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100 text-center">Delete Media Item</h3>
+            <p className="mt-2 text-sm text-admin-slate-500 dark:text-admin-slate-400 text-center">
               Are you sure you want to delete this media item? This action cannot be undone.
             </p>
           </div>
@@ -29,13 +29,13 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={onClose}
-              className="w-full sm:w-1/2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-sm font-medium transition duration-300"
+              className="w-full sm:w-1/2 px-4 py-2 bg-admin-slate-100 dark:bg-admin-slate-700 text-admin-slate-700 dark:text-admin-slate-300 hover:bg-admin-slate-200 dark:hover:bg-admin-slate-600 rounded-md text-sm font-medium transition duration-300"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="w-full sm:w-1/2 px-4 py-2 bg-secondary-500 text-white hover:bg-secondary-600 rounded-md text-sm font-medium transition duration-300"
+              className="w-full sm:w-1/2 px-4 py-2 bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700 rounded-md text-sm font-medium transition duration-300"
             >
               Delete
             </button>
@@ -150,8 +150,8 @@ const MediaPage = () => {
       <div
         className={`${
           view === "grid"
-            ? "relative group aspect-square overflow-hidden rounded-lg border border-gray-200"
-            : "flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-lg"
+            ? "relative group aspect-square overflow-hidden rounded-lg border border-admin-slate-200 dark:border-admin-slate-700"
+            : "flex items-center space-x-4 p-4 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50 rounded-lg"
         }`}
       >
         <div className={view === "grid" ? "h-full w-full" : "flex-shrink-0 h-16 w-16"}>
@@ -169,9 +169,9 @@ const MediaPage = () => {
             />
           )}
           {isDocument && (
-            <div className="h-full w-full flex items-center justify-center bg-gray-100">
+            <div className="h-full w-full flex items-center justify-center bg-admin-slate-100 dark:bg-admin-slate-700">
               <svg
-                className="h-8 w-8 text-gray-400"
+                className="h-8 w-8 text-admin-slate-400 dark:text-admin-slate-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -189,7 +189,7 @@ const MediaPage = () => {
 
         {view === "grid" && (
           <>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-admin-slate-900/70 via-admin-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
             <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-300">
               <div className="flex justify-end">
                 <button
@@ -216,7 +216,7 @@ const MediaPage = () => {
                 <p className="font-medium truncate text-xs">
                   {item.name}
                 </p>
-                <p className="text-xs text-gray-300 mt-0.5">
+                <p className="text-xs text-admin-slate-300 mt-0.5">
                   {new Date(item.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -228,14 +228,14 @@ const MediaPage = () => {
           <div className="flex-1">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-gray-900 font-medium">{item.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-admin-slate-900 dark:text-admin-slate-100 font-medium">{item.name}</p>
+                <p className="text-sm text-admin-slate-500 dark:text-admin-slate-400">
                   {new Date(item.createdAt).toLocaleDateString()}
                 </p>
               </div>
               <button
                 onClick={() => handleDeleteClick(item)}
-                className="p-2 rounded-full text-red-500 hover:bg-red-50"
+                className="p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
               >
                 <svg
                   className="h-5 w-5"
@@ -262,8 +262,8 @@ const MediaPage = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Media Library</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-admin-slate-900 dark:text-admin-slate-100">Media Library</h1>
+          <p className="mt-1 text-sm text-admin-slate-600 dark:text-admin-slate-400">
             Manage your media files, including images, videos, and documents.
           </p>
         </div>
@@ -279,13 +279,13 @@ const MediaPage = () => {
             <select
               value={selectedResizeOption}
               onChange={(e) => setSelectedResizeOption(e.target.value)}
-              className="block w-full md:w-auto px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+              className="block w-full md:w-auto px-4 py-3 text-sm font-medium rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-admin-slate-700 dark:text-admin-slate-300 shadow-sm hover:border-admin-ucla-500 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:border-admin-ucla-500 transition-colors duration-200"
             >
               {resizeOptions.map(option => (
                 <option 
                   key={option.value} 
                   value={option.value}
-                  className="py-2 text-gray-700"
+                  className="py-2 text-admin-slate-700 dark:text-admin-slate-300"
                 >
                   {option.label}
                 </option>
@@ -294,7 +294,7 @@ const MediaPage = () => {
             <button
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-admin-ucla-500 text-white px-4 py-2 rounded-md hover:bg-admin-ucla-600 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
             >
               {isUploading ? `Uploading ${uploadProgress}%` : "Upload Media"}
             </button>
@@ -304,8 +304,8 @@ const MediaPage = () => {
               onClick={() => setView("grid")}
               className={`px-4 py-2 text-sm font-medium rounded-l-md ${
                 view === "grid"
-                  ? "bg-primary-500 text-white"
-                  : "bg-white text-gray-700 hover:text-gray-900"
+                  ? "bg-admin-ucla-500 text-white"
+                  : "bg-white dark:bg-admin-slate-800 text-admin-slate-700 dark:text-admin-slate-300 hover:text-admin-slate-900 dark:hover:text-admin-slate-100"
               }`}
             >
               <svg
@@ -326,8 +326,8 @@ const MediaPage = () => {
               onClick={() => setView("list")}
               className={`px-4 py-2 text-sm font-medium rounded-r-md ${
                 view === "list"
-                  ? "bg-primary-500 text-white"
-                  : "bg-white text-gray-700 hover:text-gray-900"
+                  ? "bg-admin-ucla-500 text-white"
+                  : "bg-white dark:bg-admin-slate-800 text-admin-slate-700 dark:text-admin-slate-300 hover:text-admin-slate-900 dark:hover:text-admin-slate-100"
               }`}
             >
               <svg
@@ -348,11 +348,11 @@ const MediaPage = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg p-6">
         {mediaItems.length === 0 ? (
           <div className="text-center py-12">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-admin-slate-400 dark:text-admin-slate-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -364,14 +364,14 @@ const MediaPage = () => {
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No media</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="mt-2 text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100">No media</h3>
+            <p className="mt-1 text-sm text-admin-slate-500 dark:text-admin-slate-400">
               Get started by uploading your first media file.
             </p>
             <div className="mt-6">
               <button
                 onClick={handleUploadClick}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-admin-ucla-500 hover:bg-admin-ucla-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-ucla-500 dark:focus:ring-offset-admin-slate-800 transition duration-300"
               >
                 <svg
                   className="-ml-1 mr-2 h-5 w-5"

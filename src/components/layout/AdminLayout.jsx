@@ -175,7 +175,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6">
+        <nav className="flex-1 overflow-y-auto px-4 py-6 scrollbar-admin">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -313,7 +313,7 @@ const AdminLayout = () => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-admin-slate-50 dark:bg-admin-slate-900">
+        <main className="flex-1 overflow-y-auto bg-admin-slate-50 dark:bg-admin-slate-900 scrollbar-admin">
           <div className="container mx-auto px-4 py-6">
             <Outlet />
           </div>

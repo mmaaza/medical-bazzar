@@ -35,13 +35,13 @@ const ProductsPage = () => {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
       case 'low':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400';
       case 'out':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-admin-slate-100 dark:bg-admin-slate-800 text-admin-slate-800 dark:text-admin-slate-200';
     }
   };
 
@@ -50,11 +50,11 @@ const ProductsPage = () => {
       {/* Header */}
       <div className="sm:flex sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage your medical supplies inventory</p>
+          <h1 className="text-2xl font-bold text-admin-slate-900 dark:text-admin-slate-100">Products</h1>
+          <p className="mt-1 text-sm text-admin-slate-600 dark:text-admin-slate-400">Manage your medical supplies inventory</p>
         </div>
         <div className="mt-4 sm:mt-0">
-          <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-300">
+          <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-admin-ucla-500 hover:bg-admin-ucla-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-ucla-500 transition duration-300">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -64,16 +64,16 @@ const ProductsPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white shadow-mobile rounded-lg p-4 sm:p-6">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="w-full sm:w-56">
-            <label htmlFor="category-select" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="category-select" className="block text-sm font-medium text-admin-slate-600 dark:text-admin-slate-400 mb-2">
               Filter by Category
             </label>
             <div className="relative">
               <select
                 id="category-select"
-                className="w-full border appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-gray-900 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full appearance-none rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 py-2.5 pl-4 pr-10 text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100 shadow-sm hover:border-admin-ucla-500 focus:border-admin-ucla-500 focus:outline-none focus:ring-1 focus:ring-admin-ucla-500"
               >
                 <option value="all">All Categories</option>
                 <option value="diagnostic">Diagnostic Devices</option>
@@ -82,7 +82,7 @@ const ProductsPage = () => {
                 <option value="disposables">Medical Disposables</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -90,13 +90,13 @@ const ProductsPage = () => {
           </div>
 
           <div className="w-full sm:w-56">
-            <label htmlFor="status-select" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="status-select" className="block text-sm font-medium text-admin-slate-600 dark:text-admin-slate-400 mb-2">
               Filter by Status
             </label>
             <div className="relative">
               <select
                 id="status-select"
-                className="w-full border appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-gray-900 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full appearance-none rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 py-2.5 pl-4 pr-10 text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100 shadow-sm hover:border-admin-ucla-500 focus:border-admin-ucla-500 focus:outline-none focus:ring-1 focus:ring-admin-ucla-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -104,7 +104,7 @@ const ProductsPage = () => {
                 <option value="out">Out of Stock</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -112,7 +112,7 @@ const ProductsPage = () => {
           </div>
 
           <div className="flex-1">
-            <label htmlFor="search-products" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="search-products" className="block text-sm font-medium text-admin-slate-600 dark:text-admin-slate-400 mb-2">
               Search Products
             </label>
             <div className="relative">
@@ -120,10 +120,10 @@ const ProductsPage = () => {
                 type="text"
                 id="search-products"
                 placeholder="Search by name, category or ID..."
-                className="w-full border rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 py-2.5 pl-10 pr-4 text-sm text-admin-slate-900 dark:text-admin-slate-100 placeholder-admin-slate-400 dark:placeholder-admin-slate-500 shadow-sm hover:border-admin-ucla-500 focus:border-admin-ucla-500 focus:outline-none focus:ring-1 focus:ring-admin-ucla-500"
               />
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -133,52 +133,52 @@ const ProductsPage = () => {
       </div>
 
       {/* Products Table */}
-      <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
+            <thead className="bg-admin-slate-50 dark:bg-admin-slate-800/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Product
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Price
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Stock
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-admin-slate-800 divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
               {products.map((product) => (
-                <tr key={product.id}>
+                <tr key={product.id} className="hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700/50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
                         <img className="h-10 w-10 rounded-lg object-cover" src={product.image} alt={product.name} />
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                        <div className="text-sm text-gray-500">ID: {product.id}</div>
+                        <div className="text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100">{product.name}</div>
+                        <div className="text-sm text-admin-slate-500 dark:text-admin-slate-400">ID: {product.id}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{product.category}</div>
+                    <div className="text-sm text-admin-slate-900 dark:text-admin-slate-100">{product.category}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">${product.price.toFixed(2)}</div>
+                    <div className="text-sm text-admin-slate-900 dark:text-admin-slate-100">${product.price.toFixed(2)}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-slate-900 dark:text-admin-slate-100">
                     {product.stock}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -187,8 +187,8 @@ const ProductsPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-primary-500 hover:text-primary-600 mr-4">Edit</button>
-                    <button className="text-secondary-500 hover:text-secondary-600">Delete</button>
+                    <button className="text-admin-ucla-500 hover:text-admin-ucla-600 dark:text-admin-ucla-400 dark:hover:text-admin-ucla-300 mr-4">Edit</button>
+                    <button className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -197,37 +197,37 @@ const ProductsPage = () => {
         </div>
         
         {/* Pagination */}
-        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div className="bg-white dark:bg-admin-slate-800 px-4 py-3 flex items-center justify-between border-t border-admin-slate-200 dark:border-admin-slate-700 sm:px-6">
           <div className="flex-1 flex justify-between sm:hidden">
-            <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <button className="relative inline-flex items-center px-4 py-2 border border-admin-slate-200 dark:border-admin-slate-700 text-sm font-medium rounded-md text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
               Previous
             </button>
-            <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-admin-slate-200 dark:border-admin-slate-700 text-sm font-medium rounded-md text-admin-slate-700 dark:text-admin-slate-200 bg-white dark:bg-admin-slate-800 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
               Next
             </button>
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-admin-slate-700 dark:text-admin-slate-300">
                 Showing <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
                 <span className="font-medium">97</span> results
               </p>
             </div>
             <div>
               <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-sm font-medium text-admin-slate-500 dark:text-admin-slate-400 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
                   Previous
                 </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button className="relative inline-flex items-center px-4 py-2 border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
                   1
                 </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button className="relative inline-flex items-center px-4 py-2 border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
                   2
                 </button>
-                <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button className="relative inline-flex items-center px-4 py-2 border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
                   3
                 </button>
-                <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-sm font-medium text-admin-slate-500 dark:text-admin-slate-400 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700">
                   Next
                 </button>
               </nav>

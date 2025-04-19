@@ -268,5 +268,30 @@ export default {
       translate: ['responsive', 'hover', 'focus', 'active'],
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const scrollbarUtilities = {
+        '.scrollbar-admin': {
+          '&::-webkit-scrollbar': {
+            width: '12px',
+            height: '12px',
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: 'var(--admin-prussian-200, #00111e)',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'var(--admin-ucla-500, #2a6f97)',
+            borderRadius: '6px',
+            border: '3px solid var(--admin-prussian-200, #00111e)',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: 'var(--admin-ucla-600, #3a93c7)',
+          },
+          scrollbarWidth: 'auto',
+          scrollbarColor: 'var(--admin-ucla-500, #2a6f97) var(--admin-prussian-200, #00111e)',
+        },
+      };
+      addUtilities(scrollbarUtilities, ['dark']);
+    },
+  ],
 };

@@ -6,10 +6,18 @@ import MediaUploadButton from '../../components/ui/MediaUploadButton';
 const Notification = ({ message, type, onClose }) => {
   if (!message) return null;
 
-  const bgColor = type === 'error' ? 'bg-red-50' : 'bg-green-50';
-  const textColor = type === 'error' ? 'text-red-800' : 'text-green-800';
-  const borderColor = type === 'error' ? 'border-red-300' : 'border-green-300';
-  const iconColor = type === 'error' ? 'text-red-400' : 'text-green-400';
+  const bgColor = type === 'error' 
+    ? 'bg-red-100 dark:bg-red-900/30' 
+    : 'bg-green-100 dark:bg-green-900/30';
+  const textColor = type === 'error' 
+    ? 'text-red-800 dark:text-red-400' 
+    : 'text-green-800 dark:text-green-400';
+  const borderColor = type === 'error' 
+    ? 'border-red-300 dark:border-red-700' 
+    : 'border-green-300 dark:border-green-700';
+  const iconColor = type === 'error' 
+    ? 'text-red-400 dark:text-red-300' 
+    : 'text-green-400 dark:text-green-300';
 
   return (
     <div className={`rounded-md ${bgColor} p-4 mb-4 border ${borderColor}`}>
@@ -118,14 +126,17 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
 
   return (
     <div className="fixed inset-0 z-overlay flex items-start justify-center overflow-y-auto">
-      <div className="fixed inset-0 bg-gray-900/50"></div>
+      <div className="fixed inset-0 bg-admin-slate-900/50"></div>
       <div className="relative w-full max-w-3xl my-8 mx-auto p-4">
-        <div className="bg-white rounded-lg shadow-xl relative">
-          <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900">
+        <div className="bg-white dark:bg-admin-slate-800 rounded-lg shadow-xl relative">
+          <div className="flex justify-between items-center px-6 py-4 border-b border-admin-slate-200 dark:border-admin-slate-700">
+            <h3 className="text-xl font-bold text-admin-slate-900 dark:text-admin-slate-100">
               {mode === 'add' ? 'Add New Category' : 'Edit Category'}
             </h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full p-1">
+            <button 
+              onClick={onClose} 
+              className="text-admin-slate-400 dark:text-admin-slate-500 hover:text-admin-slate-500 dark:hover:text-admin-slate-400 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800 rounded-full p-1"
+            >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -138,31 +149,31 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
           }} className="p-6 space-y-6">
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+                <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-1.5">Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm text-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-admin-slate-900 dark:text-admin-slate-100 text-sm focus:ring-2 focus:ring-admin-ucla-500 focus:border-admin-ucla-500 transition-colors"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-1.5">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm text-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                  className="w-full px-4 py-2.5 rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-admin-slate-900 dark:text-admin-slate-100 text-sm focus:ring-2 focus:ring-admin-ucla-500 focus:border-admin-ucla-500 transition-colors resize-none"
                   rows="3"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Parent Category</label>
+                <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-1.5">Parent Category</label>
                 <div className="relative">
                   <select
                     value={formData.parentId}
                     onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm text-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors appearance-none"
+                    className="w-full px-4 py-2.5 rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-admin-slate-900 dark:text-admin-slate-100 text-sm focus:ring-2 focus:ring-admin-ucla-500 focus:border-admin-ucla-500 transition-colors appearance-none"
                   >
                     <option value="">None (Top Level)</option>
                     {getAvailableParents().map(cat => (
@@ -171,7 +182,7 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-admin-slate-400 dark:text-admin-slate-500">
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -179,17 +190,17 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+                <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-1.5">Status</label>
                 <div className="relative">
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 shadow-sm text-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors appearance-none"
+                    className="w-full px-4 py-2.5 rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 text-admin-slate-900 dark:text-admin-slate-100 text-sm focus:ring-2 focus:ring-admin-ucla-500 focus:border-admin-ucla-500 transition-colors appearance-none"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-admin-slate-400 dark:text-admin-slate-500">
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -197,7 +208,7 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Image</label>
+                <label className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-1.5">Category Image</label>
                 <div className="space-y-3">
                   {formData.image && (
                     <div className="relative w-24 h-24 rounded-lg overflow-hidden">
@@ -208,7 +219,7 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
                       />
                       <button
                         onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
-                        className="absolute top-1 right-1 p-1 bg-red-500 rounded-full text-white hover:bg-red-600"
+                        className="absolute top-1 right-1 p-1 bg-red-500 dark:bg-red-600 rounded-full text-white hover:bg-red-600 dark:hover:bg-red-700"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -225,17 +236,17 @@ const CategoryModal = ({ isOpen, onClose, mode, selectedCategory, categories, on
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-3 pt-6 border-t border-admin-slate-200 dark:border-admin-slate-700">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="px-4 py-2 text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 bg-white dark:bg-admin-slate-800 border border-admin-slate-300 dark:border-admin-slate-600 rounded-md shadow-sm hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-admin-ucla-500 hover:bg-admin-ucla-600 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:ring-offset-2 dark:focus:ring-offset-admin-slate-800"
               >
                 {mode === 'add' ? 'Create Category' : 'Save Changes'}
               </button>
@@ -254,27 +265,27 @@ const CategorySkeleton = () => {
     <tr key={index} className="animate-pulse">
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
-          <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
+          <div className="h-10 w-10 bg-admin-slate-200 dark:bg-admin-slate-700 rounded-lg"></div>
           <div className="ml-4">
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
-            <div className="h-3 bg-gray-200 rounded w-24 mt-2"></div>
+            <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-32"></div>
+            <div className="h-3 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24 mt-2"></div>
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-4 bg-gray-200 rounded w-24"></div>
+        <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24"></div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-4 bg-gray-200 rounded w-8"></div>
+        <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-8"></div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="h-5 bg-gray-200 rounded w-16"></div>
+        <div className="h-5 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-16"></div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right">
         <div className="flex justify-end space-x-4">
-          <div className="h-4 bg-gray-200 rounded w-12"></div>
-          <div className="h-4 bg-gray-200 rounded w-24"></div>
-          <div className="h-4 bg-gray-200 rounded w-14"></div>
+          <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-12"></div>
+          <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-24"></div>
+          <div className="h-4 bg-admin-slate-200 dark:bg-admin-slate-700 rounded w-14"></div>
         </div>
       </td>
     </tr>
@@ -383,15 +394,15 @@ const CategoriesPage = () => {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
   
-          <div className="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+          <div className="relative bg-white dark:bg-admin-slate-800 rounded-lg max-w-md w-full p-6 shadow-xl">
             <div className="mb-6">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-secondary-100 mb-4">
-                <svg className="h-6 w-6 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-secondary-100 dark:bg-secondary-900 mb-4">
+                <svg className="h-6 w-6 text-secondary-500 dark:text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 text-center">Delete Category</h3>
-              <p className="mt-2 text-sm text-gray-500 text-center">
+              <h3 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100 text-center">Delete Category</h3>
+              <p className="mt-2 text-sm text-admin-slate-500 dark:text-admin-slate-400 text-center">
                 Are you sure you want to delete this category and all its subcategories? This action cannot be undone.
               </p>
             </div>
@@ -399,13 +410,13 @@ const CategoriesPage = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={onClose}
-                className="w-full sm:w-1/2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-sm font-medium transition duration-300"
+                className="w-full sm:w-1/2 px-4 py-2 bg-admin-slate-100 dark:bg-admin-slate-700 text-admin-slate-700 dark:text-admin-slate-300 hover:bg-admin-slate-200 dark:hover:bg-admin-slate-600 rounded-md text-sm font-medium transition duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={onConfirm}
-                className="w-full sm:w-1/2 px-4 py-2 bg-secondary-500 text-white hover:bg-secondary-600 rounded-md text-sm font-medium transition duration-300"
+                className="w-full sm:w-1/2 px-4 py-2 bg-secondary-500 dark:bg-secondary-600 text-white hover:bg-secondary-600 dark:hover:bg-secondary-700 rounded-md text-sm font-medium transition duration-300"
               >
                 Delete
               </button>
@@ -434,22 +445,22 @@ const CategoriesPage = () => {
                 <img className="h-10 w-10 rounded-lg object-cover" src={category.image} alt={category.name} />
               </div>
               <div className="ml-4">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100">
                   {level > 0 && '└─ '}{category.name}
                 </div>
-                <div className="text-sm text-gray-500">{category.description}</div>
+                <div className="text-sm text-admin-slate-500 dark:text-admin-slate-400">{category.description}</div>
               </div>
             </div>
           </td>
           <td className="px-6 py-4 whitespace-nowrap">
-            <div className="text-sm text-gray-900">{category.slug}</div>
+            <div className="text-sm text-admin-slate-900 dark:text-admin-slate-100">{category.slug}</div>
           </td>
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-slate-900 dark:text-admin-slate-100">
             {category.productsCount}
           </td>
           <td className="px-6 py-4 whitespace-nowrap">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              category.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+              category.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
             }`}>
               {category.status}
             </span>
@@ -461,7 +472,7 @@ const CategoriesPage = () => {
                 setModalMode('edit');
                 setIsModalOpen(true);
               }}
-              className="text-primary-500 hover:text-primary-600 mr-4"
+              className="text-admin-ucla-500 dark:text-admin-ucla-400 hover:text-admin-ucla-600 dark:hover:text-admin-ucla-300 mr-4"
             >
               Edit
             </button>
@@ -469,16 +480,15 @@ const CategoriesPage = () => {
               onClick={() => {
                 setSelectedCategory(category);
                 setModalMode('add');
-                // Initialize with the current category as parent for sub-category
                 setIsModalOpen(true);
               }}
-              className="text-primary-500 hover:text-primary-600 mr-4"
+              className="text-admin-ucla-500 dark:text-admin-ucla-400 hover:text-admin-ucla-600 dark:hover:text-admin-ucla-300 mr-4"
             >
               Add Sub-category
             </button>
             <button 
               onClick={() => handleDeleteClick(category)}
-              className="text-secondary-500 hover:text-secondary-600"
+              className="text-secondary-500 dark:text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300"
             >
               Delete
             </button>
@@ -504,8 +514,8 @@ const CategoriesPage = () => {
 
       <div className="sm:flex sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-admin-slate-900 dark:text-admin-slate-100">Categories</h1>
+          <p className="mt-1 text-sm text-admin-slate-600 dark:text-admin-slate-400">
             Manage your product categories
           </p>
         </div>
@@ -516,7 +526,7 @@ const CategoriesPage = () => {
               setModalMode('add');
               setIsModalOpen(true);
             }}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-300"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-admin-ucla-500 hover:bg-admin-ucla-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-ucla-500 dark:focus:ring-offset-admin-slate-800 transition duration-300"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -526,10 +536,10 @@ const CategoriesPage = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-mobile rounded-lg p-4 sm:p-6">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="w-full sm:w-56">
-            <label htmlFor="status-select" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="status-select" className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-2">
               Filter by Status
             </label>
             <div className="relative">
@@ -537,14 +547,14 @@ const CategoriesPage = () => {
                 id="status-select"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full border appearance-none rounded-lg border-gray-300 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-gray-900 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full appearance-none rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 py-2.5 pl-4 pr-10 text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100 shadow-sm hover:border-admin-ucla-500 focus:border-admin-ucla-500 focus:outline-none focus:ring-1 focus:ring-admin-ucla-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -552,7 +562,7 @@ const CategoriesPage = () => {
           </div>
 
           <div className="flex-1">
-            <label htmlFor="search-categories" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="search-categories" className="block text-sm font-medium text-admin-slate-700 dark:text-admin-slate-300 mb-2">
               Search Categories
             </label>
             <div className="relative">
@@ -562,10 +572,10 @@ const CategoriesPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name or description..."
-                className="w-full border rounded-lg border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 shadow-sm hover:border-primary-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full rounded-lg border border-admin-slate-200 dark:border-admin-slate-700 bg-white dark:bg-admin-slate-800 py-2.5 pl-10 pr-4 text-sm text-admin-slate-900 dark:text-admin-slate-100 placeholder-admin-slate-400 dark:placeholder-admin-slate-500 shadow-sm hover:border-admin-ucla-500 focus:border-admin-ucla-500 focus:outline-none focus:ring-1 focus:ring-admin-ucla-500"
               />
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-admin-slate-400 dark:text-admin-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -574,29 +584,29 @@ const CategoriesPage = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-mobile rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-admin-slate-800 shadow-sm rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
+            <thead className="bg-admin-slate-50 dark:bg-admin-slate-800/50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Slug
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Products
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-admin-slate-500 dark:text-admin-slate-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-admin-slate-800 divide-y divide-admin-slate-200 dark:divide-admin-slate-700">
               {isLoading ? <CategorySkeleton /> : renderCategories(categories)}
             </tbody>
           </table>

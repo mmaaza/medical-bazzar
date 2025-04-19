@@ -1,7 +1,7 @@
 import React from 'react';
 
 const StatCard = ({ title, value, trend, trendValue, icon }) => (
-  <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 relative overflow-hidden">
+  <div className="bg-white dark:bg-admin-slate-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 relative overflow-hidden">
     {/* Icon Background */}
     <div className="absolute right-0 top-0 w-24 h-24 opacity-10 transform translate-x-8 -translate-y-8">
       {icon}
@@ -9,15 +9,17 @@ const StatCard = ({ title, value, trend, trendValue, icon }) => (
     
     {/* Content */}
     <div className="relative z-10">
-      <div className="p-3 bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg inline-block">
-        {icon}
+      <div className="p-3 bg-admin-ucla-100 dark:bg-admin-ucla-500/10 rounded-lg inline-block">
+        {React.cloneElement(icon, { className: 'w-6 h-6 text-admin-ucla-500' })}
       </div>
-      <p className="text-sm font-medium text-gray-500 mt-4 mb-1">{title}</p>
-      <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+      <p className="text-sm font-medium text-admin-slate-600 dark:text-admin-slate-400 mt-4 mb-1">{title}</p>
+      <h3 className="text-2xl font-bold text-admin-slate-900 dark:text-admin-slate-100">{value}</h3>
       
       {/* Trend Indicator */}
       <div className={`flex items-center space-x-1 mt-2 ${
-        trend === 'up' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'
+        trend === 'up' 
+          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400' 
+          : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
       } px-2 py-1 rounded-full inline-flex`}>
         {trend === 'up' ? (
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,18 +89,18 @@ const AnalyticsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics Overview</h1>
-          <p className="mt-1 text-sm text-gray-500">View detailed statistics and insights</p>
+          <h1 className="text-2xl font-bold text-admin-slate-900 dark:text-admin-slate-100">Analytics Overview</h1>
+          <p className="mt-1 text-sm text-admin-slate-600 dark:text-admin-slate-400">View detailed statistics and insights</p>
         </div>
         <div className="relative w-full sm:w-auto">
-          <select className="w-full sm:w-auto appearance-none bg-white py-2 pl-4 pr-10 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm font-medium text-gray-700 rounded-lg cursor-pointer hover:border-gray-400 transition-colors duration-200">
-            <option className="py-2">Last 7 days</option>
-            <option className="py-2">Last 30 days</option>
-            <option className="py-2">Last 90 days</option>
-            <option className="py-2">This year</option>
+          <select className="w-full sm:w-auto appearance-none bg-white dark:bg-admin-slate-800 py-2 pl-4 pr-10 border border-admin-slate-200 dark:border-admin-slate-700 focus:outline-none focus:ring-2 focus:ring-admin-ucla-500 focus:border-transparent text-sm font-medium text-admin-slate-600 dark:text-admin-slate-400 rounded-lg cursor-pointer hover:border-admin-ucla-400 transition-colors duration-200">
+            <option>Last 7 days</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+            <option>This year</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-admin-slate-400 dark:text-admin-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
@@ -115,34 +117,34 @@ const AnalyticsPage = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Revenue Overview</h3>
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-            <p className="text-gray-500">Revenue chart will be implemented here</p>
+        <div className="bg-white dark:bg-admin-slate-800 p-6 rounded-lg shadow-sm">
+          <h3 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100 mb-4">Revenue Overview</h3>
+          <div className="h-80 flex items-center justify-center bg-admin-slate-50 dark:bg-admin-slate-700/50 rounded-lg">
+            <p className="text-admin-slate-600 dark:text-admin-slate-400">Revenue chart will be implemented here</p>
           </div>
         </div>
 
         {/* Orders Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Order Statistics</h3>
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-            <p className="text-gray-500">Orders chart will be implemented here</p>
+        <div className="bg-white dark:bg-admin-slate-800 p-6 rounded-lg shadow-sm">
+          <h3 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100 mb-4">Order Statistics</h3>
+          <div className="h-80 flex items-center justify-center bg-admin-slate-50 dark:bg-admin-slate-700/50 rounded-lg">
+            <p className="text-admin-slate-600 dark:text-admin-slate-400">Orders chart will be implemented here</p>
           </div>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow-sm">
+      <div className="bg-white dark:bg-admin-slate-800 rounded-lg shadow-sm">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
-            <button className="text-sm font-medium text-primary-500 hover:text-primary-600">
+            <h3 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100">Recent Activity</h3>
+            <button className="text-sm font-medium text-admin-ucla-500 hover:text-admin-ucla-600 dark:text-admin-ucla-400 dark:hover:text-admin-ucla-300">
               View all
             </button>
           </div>
           <div className="space-y-4">
             {/* Activity items would go here */}
-            <p className="text-gray-500 text-sm">Activity feed will be implemented here</p>
+            <p className="text-admin-slate-600 dark:text-admin-slate-400 text-sm">Activity feed will be implemented here</p>
           </div>
         </div>
       </div>
