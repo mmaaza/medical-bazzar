@@ -210,6 +210,85 @@ The color scheme is defined in `tailwind.config.js` and consists of the followin
 - Main container: container mx-auto px-4
 - Section dividers: curved SVG shapes or solid color transitions
 
+## Admin Panel Theme
+The admin panel uses a distinct dark mode color scheme based on blues, separate from the main client-side theme.
+
+### Admin Color Palette
+All colors are accessible through the 'admin-' prefix in Tailwind classes.
+
+1. Prussian Blue (Primary)
+- admin-prussian-100: #00090f (Darkest background)
+- admin-prussian-200: #00111e (Dark background)
+- admin-prussian-300: #011a2d (Container background)
+- admin-prussian-400: #01233c (Border color)
+- admin-prussian-500: #012a4a (Default)
+- admin-prussian-600: #025ca1 (Hover state)
+- admin-prussian-700: #048df6 (Active state)
+- admin-prussian-800: #54b4fc (Light text)
+- admin-prussian-900: #aad9fe (Lightest text)
+
+2. UCLA Blue (Secondary)
+- admin-ucla-100: #09161e
+- admin-ucla-200: #112d3c
+- admin-ucla-300: #1a435b
+- admin-ucla-400: #225979
+- admin-ucla-500: #2a6f97 (Main accent color)
+- admin-ucla-600: #3a93c7
+- admin-ucla-700: #6baed5
+- admin-ucla-800: #9cc9e3
+- admin-ucla-900: #cee4f1
+
+3. Light Blue (Text & Icons)
+- admin-light-100: #12333d
+- admin-light-200: #25657b
+- admin-light-300: #3798b8
+- admin-light-400: #6bb9d3
+- admin-light-500: #a9d6e5 (Primary text color)
+
+### Admin Dark Mode Usage
+The admin panel automatically enables dark mode. Key color combinations:
+
+1. Backgrounds
+- Main background: bg-admin-prussian-200 dark:bg-admin-prussian-100
+- Container background: bg-admin-prussian-300 dark:bg-admin-prussian-200
+- Accent backgrounds: bg-admin-ucla-500
+
+2. Text Colors
+- Primary text: text-admin-light-500
+- Secondary text: text-admin-light-300
+- Muted text: text-admin-light-200
+
+3. Borders
+- Default border: border-admin-prussian-400
+
+4. Interactive Elements
+- Buttons: bg-admin-ucla-500 hover:bg-admin-ucla-600
+- Links: text-admin-ucla-500 hover:text-admin-ucla-600
+- Active states: bg-admin-ucla-500 text-white
+
+### Admin Component Guidelines
+1. Cards and Containers
+```html
+<div class="bg-admin-prussian-300 dark:bg-admin-prussian-200 rounded-lg shadow-sm">
+```
+
+2. Navigation Items
+```html
+<a class="text-admin-light-300 hover:bg-admin-prussian-400 hover:text-white">
+```
+
+3. Tables
+```html
+<table class="divide-y divide-admin-prussian-400">
+  <thead class="bg-admin-prussian-400">
+  <tbody class="bg-admin-prussian-300 dark:bg-admin-prussian-200">
+```
+
+4. Form Elements
+```html
+<input class="bg-admin-prussian-300 border-admin-prussian-400 text-admin-light-500">
+```
+
 ## Note on Implementation
 1. Always start by designing for mobile screens first
 2. Always use the colors defined in tailwind.config.js rather than hardcoding values

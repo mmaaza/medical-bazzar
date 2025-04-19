@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLoading } from '../../contexts/LoadingContext';
@@ -127,10 +127,17 @@ const navigation = [
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const { isLoading } = useLoading(); // Replace local loading state with context
+  const { isLoading } = useLoading();
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
+
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+    return () => {
+      document.documentElement.classList.remove('dark');
+    };
+  }, []);
 
   const isActiveRoute = (path) => {
     return location.pathname === path;
@@ -146,20 +153,20 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-admin-slate-100 dark:bg-admin-slate-900">
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-40 h-full w-72 bg-white border-r border-gray-200
+        fixed top-0 left-0 z-40 h-full w-72 bg-admin-slate-50 dark:bg-admin-slate-800 border-r border-admin-slate-200 dark:border-admin-slate-700
         transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static
         flex flex-col
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Logo Header */}
-        <div className="flex h-16 items-center justify-between px-6 bg-primary-500 text-white flex-shrink-0">
+        <div className="flex h-16 items-center justify-between px-6 bg-admin-slate-800 dark:bg-admin-slate-900 text-white flex-shrink-0">
           <Link to="/admin" className="text-xl font-bold">MB Nepal Admin</Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden -mr-2 p-2 hover:bg-primary-600 rounded-md"
+            className="lg:hidden -mr-2 p-2 hover:bg-admin-slate-700 rounded-md"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -167,7 +174,7 @@ const AdminLayout = () => {
           </button>
         </div>
 
-        {/* Navigation - Scrollable */}
+        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-4 py-6">
           {navigation.map((item) => (
             <Link
@@ -175,8 +182,8 @@ const AdminLayout = () => {
               to={item.path}
               className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                 isActiveRoute(item.path)
-                  ? 'bg-primary-50 text-primary-500'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-admin-slate-200 dark:bg-admin-slate-700 text-admin-slate-900 dark:text-white'
+                  : 'text-admin-slate-600 dark:text-admin-slate-300 hover:bg-admin-slate-100 dark:hover:bg-admin-slate-700 hover:text-admin-slate-900 dark:hover:text-white'
               }`}
             >
               {item.icon}
@@ -185,21 +192,21 @@ const AdminLayout = () => {
           ))}
         </nav>
 
-        {/* Sidebar Footer - Fixed */}
-        <div className="border-t border-gray-200 p-4 bg-white flex-shrink-0">
+        {/* Sidebar Footer */}
+        <div className="border-t border-admin-slate-200 dark:border-admin-slate-700 p-4 bg-admin-slate-50 dark:bg-admin-slate-800 flex-shrink-0">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary-600">
+              <div className="h-8 w-8 rounded-full bg-admin-slate-600 dark:bg-admin-slate-700 flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
                   {currentUser?.name?.charAt(0) || 'A'}
                 </span>
               </div>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-admin-slate-900 dark:text-admin-slate-200">
                 {currentUser?.name || 'Admin User'}
               </p>
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-admin-slate-500 dark:text-admin-slate-400">
                 {currentUser?.email || 'admin@mbnepal.com'}
               </p>
             </div>
@@ -207,44 +214,34 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* Mobile sidebar backdrop */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 z-30 bg-gray-600 bg-opacity-75 lg:hidden" 
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
-
-      {/* Main Content Area - Fixed Height */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Admin Topbar - Fixed */}
-        <header className="bg-white shadow-sm flex-shrink-0 border-b relative">
+        {/* Admin Topbar */}
+        <header className="bg-white dark:bg-admin-slate-800 shadow-sm flex-shrink-0 border-b border-admin-slate-200 dark:border-admin-slate-700">
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-            {/* Left side with menu button and breadcrumb */}
             <div className="flex items-center">
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="lg:hidden -m-2.5 p-2.5 text-gray-700 hover:text-primary-500"
+                className="lg:hidden -m-2.5 p-2.5 text-admin-slate-500 hover:text-admin-slate-700 dark:text-admin-slate-400 dark:hover:text-admin-slate-200"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
               <div className="ml-4 lg:ml-0">
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-admin-slate-900 dark:text-admin-slate-100">
                   Welcome, Admin MB Nepal
                 </h2>
               </div>
             </div>
 
-            {/* Right side with search and profile */}
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              {/* Search */}
+              {/* Search Bar */}
               <div className="flex-1 max-w-lg lg:max-w-xs">
                 <label htmlFor="search" className="sr-only">Search</label>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 text-admin-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
@@ -252,57 +249,58 @@ const AdminLayout = () => {
                     type="search"
                     name="search"
                     id="search"
-                    className="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 sm:text-sm sm:leading-6"
+                    className="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-admin-slate-900 dark:text-admin-slate-100 bg-admin-slate-50 dark:bg-admin-slate-700 ring-1 ring-inset ring-admin-slate-300 dark:ring-admin-slate-600 placeholder:text-admin-slate-400 focus:ring-2 focus:ring-admin-slate-500 sm:text-sm sm:leading-6"
                     placeholder="Search..."
                   />
                 </div>
               </div>
 
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-400 hover:text-gray-500">
+              {/* Notification Button */}
+              <button className="relative p-2 text-admin-slate-500 hover:text-admin-slate-700 dark:text-admin-slate-400 dark:hover:text-admin-slate-200">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-secondary-500"></span>
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-admin-slate-600"></span>
               </button>
 
-              {/* Profile dropdown */}
+              {/* Profile Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                   className="flex items-center gap-x-3"
                 >
-                  <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                    <span className="text-sm font-medium text-primary-600">
+                  <div className="h-8 w-8 rounded-full bg-admin-slate-600 dark:bg-admin-slate-700 flex items-center justify-center">
+                    <span className="text-sm font-medium text-white">
                       {currentUser?.name?.charAt(0) || 'A'}
                     </span>
                   </div>
                   <span className="hidden lg:flex lg:items-center">
-                    <span className="text-sm font-medium text-gray-900">{currentUser?.name || 'Admin'}</span>
-                    <svg className="ml-2 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span className="text-sm font-medium text-admin-slate-900 dark:text-admin-slate-100">
+                      {currentUser?.name || 'Admin'}
+                    </span>
+                    <svg className="ml-2 h-5 w-5 text-admin-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                     </svg>
                   </span>
                 </button>
 
-                {/* Profile Dropdown Menu */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                  <div className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-admin-slate-800 py-2 shadow-lg ring-1 ring-admin-slate-900/5 focus:outline-none">
                     <Link
                       to="/admin/profile"
-                      className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                      className="block px-3 py-1 text-sm leading-6 text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700"
                     >
                       Your Profile
                     </Link>
                     <Link
                       to="/admin/settings"
-                      className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                      className="block px-3 py-1 text-sm leading-6 text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700"
                     >
                       Settings
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                      className="block w-full text-left px-3 py-1 text-sm leading-6 text-admin-slate-700 dark:text-admin-slate-200 hover:bg-admin-slate-50 dark:hover:bg-admin-slate-700"
                     >
                       Sign out
                     </button>
@@ -311,12 +309,11 @@ const AdminLayout = () => {
               </div>
             </div>
           </div>
-          {/* Loading Bar */}
-          <div className={`absolute bottom-0 left-0 h-0.5 bg-primary-500 transition-all duration-300 ${isLoading ? 'w-full' : 'w-0'}`}></div>
+          <div className={`absolute bottom-0 left-0 h-0.5 bg-admin-slate-600 transition-all duration-300 ${isLoading ? 'w-full' : 'w-0'}`}></div>
         </header>
 
-        {/* Main Content with Scrollable Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto bg-admin-slate-50 dark:bg-admin-slate-900">
           <div className="container mx-auto px-4 py-6">
             <Outlet />
           </div>
